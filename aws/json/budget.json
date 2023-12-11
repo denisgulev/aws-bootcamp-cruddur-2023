@@ -3,7 +3,7 @@
         "Amount": "20",
         "Unit": "USD"
     },
-    "BudgetName": "Budgeting",
+    "BudgetName": "CruddurBudget",
     "BudgetType": "COST",
     "CostFilters": {
         "TagKeyValue": [
