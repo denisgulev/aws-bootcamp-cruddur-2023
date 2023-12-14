@@ -49,7 +49,7 @@ aws sts get-caller-identity
 - launch:
 ```
 aws budgets create-budget \
-    --account-id AccountID \
+    --account-id <AccountID> \
     --budget file://aws/json/budget.json \
     --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
 ```
@@ -64,9 +64,9 @@ aws sns create-topic --name billing-alarm
 - the above command return a 'topic ARN', which we will use in the following command:
 ```
 aws sns subscribe \
-    --topic-arn ***REMOVED*** \
+    --topic-arn <topic-arn> \
     --protocol email \
-    --notification-endpoint ***REMOVED***
+    --notification-endpoint <email>
 ```
 
 #### Create the alarm
