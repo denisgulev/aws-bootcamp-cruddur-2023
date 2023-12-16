@@ -84,3 +84,8 @@ aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.js
 ### Logical Diagram
 ![Cruddur - Logical Diagram](https://github.com/denisgulev/aws-bootcamp-cruddur-2023/assets/22997490/cb7f8d7d-256b-492c-ab0f-ecd0e827a63d)
 - [Link](https://lucid.app/lucidchart/37758524-e6e1-4ea1-b6fe-cf8cfdb1566a/edit?viewport_loc=328%2C211%2C1594%2C815%2C0_0&invitationId=inv_ad7290e9-6939-4967-b62c-9f179ca754a1)
+
+
+## Other Stuff
+### Alter Github repository's history
+[BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/) comes in handy to modify commits' history, by removing/replacing some secret credentials we do not want to be public.
