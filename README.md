@@ -5,7 +5,7 @@
 
 This is the starting codebase that will be used in the FREE AWS Cloud Project Bootcamp 2023.
 
-![Youtube link](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=19) for the free bootcamp
+[Youtube videos](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=19) for the free bootcamp
 
 ![Cruddur Graphic](_docs/assets/cruddur-banner.jpg)
 
