@@ -1,10 +1,7 @@
 {
     "AlarmName": "DailyEstimatedCharges",
     "AlarmDescription": "This alarm would be triggered if the daily estimated charges exceeds 5$",
-    "ActionsEnabled": true,
-    "AlarmActions": [
-        ""
-    ],
+    "ActionsEnabled": false,
     "EvaluationPeriods": 1,
     "DatapointsToAlarm": 1,
     "Threshold": 5,
