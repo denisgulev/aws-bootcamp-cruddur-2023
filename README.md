@@ -3,21 +3,19 @@
 - Application: Cruddur
 - Cohort: 2023-A1
 
-This is the starting codebase that will be used in the FREE AWS Cloud Project Bootcamp 2023
+This is the starting codebase that will be used in the FREE AWS Cloud Project Bootcamp 2023.
+
+![Youtube link](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=19) for the free bootcamp
 
 ![Cruddur Graphic](_docs/assets/cruddur-banner.jpg)
 
 ![Cruddur Screenshot](_docs/assets/cruddur-screenshot.png)
 
-## Instructions
-
-At the start of the bootcamp you need to create a new Github Repository from this template.
-
 ## Journaling Homework
 
 The `/journal` directory contains
 
-- [ ] [Week 0](journal/week0.md)
+- [X] [Week 0](journal/week0.md)
 - [ ] [Week 1](journal/week1.md)
 - [ ] [Week 2](journal/week2.md)
 - [ ] [Week 3](journal/week3.md)
