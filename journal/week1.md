@@ -203,7 +203,7 @@ networks:
 We are going to use Postgres and DynamoDB local in future labs
 We can bring them in as containers and reference them externally
 
-Lets integrate the following into our existing docker compose file:
+Let's integrate the following into our existing docker compose file:
 
 ### Postgres
 
@@ -276,3 +276,23 @@ volumes:
   db:
     driver: local
 ```
+
+## Docker Security Best Practices
+
+- Keep host and docker updated to latest patches
+- Docker daemon and containers should run as **non-root** user
+- Image should be scanned for vulnerabilities
+- Use **least privilege** principle
+- Use Secret Management Services for secrets
+- Read only File System and Volume for Docker
+- Separate dbs for long term storage
+
+#### Tools for Security scanning:
+- Snyk
+- Clair
+- Amazon Inspector
+
+#### Tools for Secret Manager
+
+- **AWS Secrets Manager** -> AWS Secrets Manager helps you manage, retrieve, and rotate database credentials, application credentials, OAuth tokens, API keys, and other secrets throughout their lifecycles. Many AWS services store and use secrets in Secrets Manager.
+- **Hashicorp Vault** -> Manage access to secrets and stop credentials from falling into the wrong hands with identity-based security.
