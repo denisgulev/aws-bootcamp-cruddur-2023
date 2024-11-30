@@ -1,8 +1,13 @@
 flask
 flask-cors
+# honeycomb dependencies
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http
 opentelemetry-instrumentation-flask
 opentelemetry-instrumentation-requests
+#cloudwatch dependencies
 watchtower
+#rollbar dependencies
+blinker
+rollbar
