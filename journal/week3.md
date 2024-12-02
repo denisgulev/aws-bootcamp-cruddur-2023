@@ -78,7 +78,33 @@ has access to the requested resources.
 
 ## Provision Cognito User Group
 
-Using the AWS Console we'll create a Cognito User Group
+Using the AWS Console we'll create a Cognito User Group.
+We'll also create an "app client" of type "Single-page application (SPA)". (this option does not create client secret)
+
+#### Create a user in the user group with the following options: 
+1. Alias attributes used to sign in
+   1. Email
+2. Invitation message
+   1. don't send invitation
+3. User name
+   1. set username as you prefer
+4. Email address
+   1. add an email that will be used to sing-in
+5. Phone number
+   1. optional
+6. Temporary password
+   1. generate an easy to remember password
+
+#### To update confirmation status of the user just created, run
+```sh
+aws cognito-idp admin-set-user-password \
+  --user-pool-id <user-pool-id> \
+  --username <username> \
+  --password <user-password> \
+  --permanent
+```
+
+**NB** --> after these settings, we will be able to sign-in with the user we created.
 
 ## Install AWS Amplify
 
@@ -97,17 +123,223 @@ Add all env variables to the docker-compose file under the frontend service.
 import { Amplify } from 'aws-amplify';
 
 Amplify.configure({
-  "AWS_PROJECT_REGION": process.env.REACT_APP_AWS_PROJECT_REGION,
-  "aws_cognito_region": process.env.REACT_APP_AWS_COGNITO_REGION,
-  "aws_user_pools_id": process.env.REACT_APP_AWS_USER_POOLS_ID,
-  "aws_user_pools_web_client_id": process.env.REACT_APP_CLIENT_ID,
-  "oauth": {},
-  Auth: {
-    // We are not using an Identity Pool
-    // identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // REQUIRED - Amazon Cognito Identity Pool ID
-    region: process.env.REACT_APP_AWS_PROJECT_REGION,           // REQUIRED - Amazon Cognito Region
-    userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,         // OPTIONAL - Amazon Cognito User Pool ID
-    userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,   // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
-  }
+    Auth: {
+        Cognito: {
+            // REQUIRED - Amazon Cognito User Pool ID
+            userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,
+            userPoolClientId: process.env.REACT_APP_CLIENT_ID,
+            loginWith: {
+                email: true
+            },
+            passwordFormat: {
+                minLength: 8,
+                requireLowercase: true,
+                requireUppercase: true,
+                requireNumbers: true,
+                requireSpecialCharacters: true,
+            }
+        }
+    }
 });
+```
+
+## Conditionally show components based on logged in or logged out
+
+Inside our `HomeFeedPage.js`
+
+```js
+import { getCurrentUser } from 'aws-amplify/auth';
+
+// set a state
+const [user, setUser] = React.useState(null);
+
+// check if we are authenicated
+const checkAuth = async () => {
+  getCurrentUser()
+     .then((user) => {
+       console.log('user',user);
+       return user
+     })
+     .then((cognito_user) => {
+         setUser({
+            display_name: cognito_user.username,
+            handle: cognito_user.username
+         })
+     })
+     .catch((err) => console.log(err));
+};
+
+// check when the page loads if we are authenicated
+React.useEffect(()=>{
+  loadData();
+  checkAuth();
+}, [])
+```
+
+We'll want to pass user to the following components:
+
+```js
+<DesktopNavigation user={user} active={'home'} setPopped={setPopped} />
+<DesktopSidebar user={user} />
+```
+
+We'll rewrite `DesktopNavigation.js` so that it conditionally shows links in the left hand column
+on whether you are logged in or not.
+
+Notice we are passing the user to ProfileInfo
+
+```js
+import './DesktopNavigation.css';
+import {ReactComponent as Logo} from './svg/logo.svg';
+import DesktopNavigationLink from '../components/DesktopNavigationLink';
+import CrudButton from '../components/CrudButton';
+import ProfileInfo from '../components/ProfileInfo';
+
+export default function DesktopNavigation(props) {
+  let button;
+  let profile;
+  let notificationsLink;
+  let messagesLink;
+  let profileLink;
+  if (props.user) {
+    button = <CrudButton setPopped={props.setPopped} />;
+    profile = <ProfileInfo user={props.user} />;
+    notificationsLink = <DesktopNavigationLink 
+      url="/notifications" 
+      name="Notifications" 
+      handle="notifications" 
+      active={props.active} />;
+    messagesLink = <DesktopNavigationLink 
+      url="/messages"
+      name="Messages"
+      handle="messages" 
+      active={props.active} />
+    profileLink = <DesktopNavigationLink 
+      url="/@andrewbrown" 
+      name="Profile"
+      handle="profile"
+      active={props.active} />
+  }
+
+  return (
+    <nav>
+      <Logo className='logo' />
+      <DesktopNavigationLink url="/" 
+        name="Home"
+        handle="home"
+        active={props.active} />
+      {notificationsLink}
+      {messagesLink}
+      {profileLink}
+      <DesktopNavigationLink url="/#" 
+        name="More" 
+        handle="more"
+        active={props.active} />
+      {button}
+      {profile}
+    </nav>
+  );
+}
+```
+
+We'll update `ProfileInfo.js`, adding signOut handling:
+
+```js
+import { signOut } from 'aws-amplify/auth';
+
+const signOut = async () => {
+    try {
+        await signOut({ global: true })
+        .then(info => {
+            window.location.href = "/"
+        })
+    } catch (error) {
+        console.log('error signing out: ', error);
+    }
+}
+```
+
+We'll rewrite `DesktopSidebar.js` so that it conditionally shows components in case you are logged in or not.
+
+```js
+import './DesktopSidebar.css';
+import Search from '../components/Search';
+import TrendingSection from '../components/TrendingsSection'
+import SuggestedUsersSection from '../components/SuggestedUsersSection'
+import JoinSection from '../components/JoinSection'
+
+export default function DesktopSidebar(props) {
+  const trendings = [
+    {"hashtag": "100DaysOfCloud", "count": 2053 },
+    {"hashtag": "CloudProject", "count": 8253 },
+    {"hashtag": "AWS", "count": 9053 },
+    {"hashtag": "FreeWillyReboot", "count": 7753 }
+  ]
+
+  const users = [
+    {"display_name": "Andrew Brown", "handle": "andrewbrown"}
+  ]
+
+  let trending;
+  let suggested;
+  let join;
+
+  if (props.user) {
+    trending = <TrendingSection trendings={trendings} />
+    suggested = <SuggestedUsersSection users={users} />
+  } else {
+    join = <JoinSection />
+  }
+
+  return (
+    <section>
+      <Search />
+      {trending}
+      {suggested}
+      {join}
+      <footer>
+        <a href="#">About</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+      </footer>
+    </section>
+  );
+}
+```
+
+## Signin Page
+
+```js
+import { signIn, fetchAuthSession } from 'aws-amplify/auth';
+
+const [errors, setErrors] = React.useState('');
+
+const onsubmit = async (event) => {
+    setErrors('')
+    event.preventDefault();
+    try {
+      const { isSignedIn, nextStep } = await signIn({ username: email, password: password });
+      if (isSignedIn) {
+        const session = await fetchAuthSession();
+        const { accessToken, idToken } = session.tokens ?? {};
+        localStorage.setItem("access_token", accessToken);
+        window.location.href = "/";
+      }
+    } catch (error) {
+    console.log("error signIn operation", error)
+      if (error.code == 'UserNotConfirmedException') {
+        window.location.href = "/confirm"
+      }
+      setErrors(error.message)
+    }
+    return false
+  }
+
+let errors;
+if (cognitoErrors){
+  errors = <div className='errors'>{cognitoErrors}</div>;
+}
+
+// just before submit component
+{errors}
 ```

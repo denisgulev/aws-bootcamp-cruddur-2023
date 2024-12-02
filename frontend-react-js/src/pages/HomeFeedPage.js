@@ -1,5 +1,6 @@
 import './HomeFeedPage.css';
 import React from "react";
+import { getCurrentUser } from 'aws-amplify/auth';
 
 import DesktopNavigation  from '../components/DesktopNavigation';
 import DesktopSidebar     from '../components/DesktopSidebar';
@@ -7,8 +8,6 @@ import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
 import ReplyForm from '../components/ReplyForm';
 
-// [TODO] Authenication
-import Cookies from 'js-cookie'
 
 export default function HomeFeedPage() {
   const [activities, setActivities] = React.useState([]);
@@ -36,14 +35,19 @@ export default function HomeFeedPage() {
   };
 
   const checkAuth = async () => {
-    console.log('checkAuth')
-    // [TODO] Authenication
-    if (Cookies.get('user.logged_in')) {
-      setUser({
-        display_name: Cookies.get('user.name'),
-        handle: Cookies.get('user.username')
-      })
-    }
+    getCurrentUser()
+        .then(user => {
+          console.log('user', user)
+          return user
+        }).then((cognito_user) => {
+        console.log("cognito_user", cognito_user)
+          setUser({
+            display_name: cognito_user.username,
+            handle: cognito_user.username
+          })
+        }).catch(err => {
+          console.log(err)
+        });
   };
 
   React.useEffect(()=>{
