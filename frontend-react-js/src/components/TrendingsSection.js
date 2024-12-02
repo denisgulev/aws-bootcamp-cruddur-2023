@@ -7,7 +7,7 @@ export default function TrendingsSection(props) {
       <div className='trendings-title'>
         Trending
       </div>
-      {props.trendings.map(trending => {
+      {props.trendingList.map(trending => {
         return <TrendItem key={trending.hashtag} hashtag={trending.hashtag} count={trending.count} />
       })}
     </div>

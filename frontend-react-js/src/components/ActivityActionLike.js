@@ -1,6 +1,6 @@
-import {ReactComponent as HeartIcon} from './svg/heart.svg';
+import { ReactComponent as HeartIcon } from './svg/heart.svg';
 
-export default function ActivityActionLike(props) { 
+export default function ActivityActionLike(props) {
   const onclick = (event) => {
     console.log('toggle like/unlike')
   }

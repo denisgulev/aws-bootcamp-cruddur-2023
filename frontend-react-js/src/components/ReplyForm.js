@@ -1,96 +1,88 @@
 import './ReplyForm.css';
-import React from "react";
-import process from 'process';
-import {ReactComponent as BombIcon} from './svg/bomb.svg';
+import React, { useState } from "react";
+import { ReactComponent as BombIcon } from './svg/bomb.svg';
 
-import ActivityContent  from '../components/ActivityContent';
+import ActivityContent from '../components/ActivityContent';
 
-export default function ReplyForm(props) {
-  const [count, setCount] = React.useState(0);
-  const [message, setMessage] = React.useState('');
+export default function ReplyForm({ popped, setPopped, activity, activities, setActivities }) {
+  const [count, setCount] = useState(0);
+  const [message, setMessage] = useState('');
 
-  const classes = []
-  classes.push('count')
-  if (240-count < 0){
-    classes.push('err')
+  // Dynamically set class for character count
+  const charCountClasses = ['count'];
+  if (240 - count < 0) {
+    charCountClasses.push('err');
   }
 
-  const onsubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${props.activity.uuid}/reply`
-      const res = await fetch(backend_url, {
+      const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`;
+      const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: message
-        }),
+        body: JSON.stringify({ message }),
       });
-      let data = await res.json();
-      if (res.status === 200) {
-        // add activity to the feed
 
-        let activities_deep_copy = JSON.parse(JSON.stringify(props.activities))
-        let found_activity = activities_deep_copy.find(function (element) {
-          return element.uuid ===  props.activity.uuid;
-        });
-        found_activity.replies.push(data)
+      if (response.ok) {
+        const data = await response.json();
+        // Update the activity's replies in a deep copy of activities
+        const updatedActivities = activities.map((item) =>
+          item.uuid === activity.uuid
+            ? { ...item, replies: [...item.replies, data] }
+            : item
+        );
+        setActivities(updatedActivities);
 
-        props.setActivities(activities_deep_copy);
-        // reset and close the form
-        setCount(0)
-        setMessage('')
-        props.setPopped(false)
+        // Reset the form
+        resetForm();
       } else {
-        console.log(res)
+        console.error('Failed to submit reply:', await response.text());
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error('Error submitting reply:', error);
     }
-  }
+  };
 
-  const textarea_onchange = (event) => {
-    setCount(event.target.value.length);
-    setMessage(event.target.value);
-  }
+  const handleTextareaChange = (event) => {
+    const newMessage = event.target.value;
+    setCount(newMessage.length);
+    setMessage(newMessage);
+  };
 
-  let content;
-  if (props.activity){
-    content = <ActivityContent activity={props.activity} />;
-  }
+  const resetForm = () => {
+    setCount(0);
+    setMessage('');
+    setPopped(false);
+  };
 
+  if (!popped) return null;
 
-  if (props.popped === true) {
-    return (
-      <div className="popup_form_wrap">
-        <div className="popup_form">
-          <div className="popup_heading">
+  return (
+    <div className="popup_form_wrap">
+      <div className="popup_form">
+        <div className="popup_heading"></div>
+        <div className="popup_content">
+          <div className="activity_wrap">
+            {activity && <ActivityContent activity={activity} />}
           </div>
-          <div className="popup_content">
-            <div className="activity_wrap">
-              {content}
+          <form className="replies_form" onSubmit={handleSubmit}>
+            <textarea
+              type="text"
+              placeholder="What is your reply?"
+              value={message}
+              onChange={handleTextareaChange}
+            />
+            <div className="submit">
+              <div className={charCountClasses.join(' ')}>{240 - count}</div>
+              <button type="submit">Reply</button>
             </div>
-            <form 
-              className='replies_form'
-              onSubmit={onsubmit}
-            >
-              <textarea
-                type="text"
-                placeholder="what is your reply?"
-                value={message}
-                onChange={textarea_onchange} 
-              />
-              <div className='submit'>
-                <div className={classes.join(' ')}>{240-count}</div>
-                <button type='submit'>Reply</button>
-              </div>
-            </form>
-          </div>
+          </form>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

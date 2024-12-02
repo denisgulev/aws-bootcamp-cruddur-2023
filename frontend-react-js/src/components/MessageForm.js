@@ -1,65 +1,67 @@
 import './MessageForm.css';
-import React from "react";
-import process from 'process';
+import React, { useState } from "react";
 import { useParams } from 'react-router-dom';
 
-export default function ActivityForm(props) {
-  const [count, setCount] = React.useState(0);
-  const [message, setMessage] = React.useState('');
-  const params = useParams();
+export default function MessageForm({ setMessages }) {
+  const [message, setMessage] = useState('');
+  const [charCount, setCharCount] = useState(0);
+  const { handle: receiverHandle } = useParams();
 
-  const classes = []
-  classes.push('count')
-  if (1024-count < 0){
-    classes.push('err')
-  }
+  const isCharCountValid = charCount <= 1024;
 
-  const onsubmit = async (event) => {
+  const handleTextChange = (event) => {
+    const newText = event.target.value;
+    setMessage(newText);
+    setCharCount(newText.length);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!isCharCountValid) return;
+
+    const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/messages`;
+
     try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/messages`
-      console.log('onsubmit payload', message)
-      const res = await fetch(backend_url, {
+      const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: message,
-          user_receiver_handle: params.handle
+          message,
+          user_receiver_handle: receiverHandle,
         }),
       });
-      let data = await res.json();
-      if (res.status === 200) {
-        props.setMessages(current => [...current,data]);
-      } else {
-        console.log(res)
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
-  const textarea_onchange = (event) => {
-    setCount(event.target.value.length);
-    setMessage(event.target.value);
-  }
+      if (response.ok) {
+        const newMessage = await response.json();
+        setMessages((currentMessages) => [...currentMessages, newMessage]);
+        setMessage('');
+        setCharCount(0);
+      } else {
+        console.error("Failed to send message", response);
+      }
+    } catch (error) {
+      console.error("Error submitting the message", error);
+    }
+  };
 
   return (
-    <form 
-      className='message_form'
-      onSubmit={onsubmit}
-    >
+    <form className="message_form" onSubmit={handleSubmit}>
       <textarea
-        type="text"
-        placeholder="send a direct message..."
+        placeholder="Send a direct message..."
         value={message}
-        onChange={textarea_onchange} 
+        onChange={handleTextChange}
+        maxLength={1024}
       />
-      <div className='submit'>
-        <div className={classes.join(' ')}>{1024-count}</div>
-        <button type='submit'>Message</button>
+      <div className="submit">
+        <div className={`count ${isCharCountValid ? '' : 'err'}`}>
+          {1024 - charCount}
+        </div>
+        <button type="submit" disabled={!isCharCountValid}>
+          Message
+        </button>
       </div>
     </form>
   );

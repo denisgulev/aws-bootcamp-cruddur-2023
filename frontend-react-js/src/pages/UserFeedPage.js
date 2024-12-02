@@ -1,60 +1,36 @@
 import './UserFeedPage.css';
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from 'react-router-dom';
-
-import DesktopNavigation  from '../components/DesktopNavigation';
-import DesktopSidebar     from '../components/DesktopSidebar';
+import DesktopNavigation from '../components/DesktopNavigation';
+import DesktopSidebar from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
-
-// [TODO] Authenication
-import Cookies from 'js-cookie'
+import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
+import { useHomeFeed } from '../hooks/useHomeFeed';
 
 export default function UserFeedPage() {
-  const [activities, setActivities] = React.useState([]);
-  const [popped, setPopped] = React.useState([]);
-  const [user, setUser] = React.useState(null);
-  const dataFetchedRef = React.useRef(false);
+  const [popped, setPopped] = useState([]);
+  const [user, setUser] = useState(null);
+  const dataFetchedRef = useRef(false);
+  const { handle } = useParams();
+  const title = `@${handle}`;
 
-  const params = useParams();
-  const title = `@${params.handle}`;
+  console.log("title", title)
 
-  const loadData = async () => {
-    try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${title}`
-      const res = await fetch(backend_url, {
-        method: "GET"
-      });
-      let resJson = await res.json();
-      if (res.status === 200) {
-        setActivities(resJson)
-      } else {
-        console.log(res)
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // Use the useAuth hook to get the authenticated user
+  const authUser = useAuth(); // Assuming useAuth provides the current authenticated user
 
-  const checkAuth = async () => {
-    console.log('checkAuth')
-    // [TODO] Authenication
-    if (Cookies.get('user.logged_in')) {
+  const { activities, setActivities } = useHomeFeed();
+
+  // Set user if authenticated
+  useEffect(() => {
+    if (authUser) {
       setUser({
-        display_name: Cookies.get('user.name'),
-        handle: Cookies.get('user.username')
-      })
+        display_name: authUser.display_ame,
+        handle: authUser.handle,
+      });
     }
-  };
-
-  React.useEffect(()=>{
-    //prevents double call
-    if (dataFetchedRef.current) return;
-    dataFetchedRef.current = true;
-
-    loadData();
-    checkAuth();
-  }, [])
+  }, [authUser]);
 
   return (
     <article>

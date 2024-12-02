@@ -1,93 +1,89 @@
 import './ActivityForm.css';
-import React from "react";
-import process from 'process';
-import {ReactComponent as BombIcon} from './svg/bomb.svg';
+import React, { useState } from "react";
+import { ReactComponent as BombIcon } from './svg/bomb.svg';
 
-export default function ActivityForm(props) {
-  const [count, setCount] = React.useState(0);
-  const [message, setMessage] = React.useState('');
-  const [ttl, setTtl] = React.useState('7-days');
+export default function ActivityForm({ popped, setPopped, setActivities }) {
+  const [count, setCount] = useState(0);
+  const [message, setMessage] = useState('');
+  const [ttl, setTtl] = useState('7-days');
 
-  const classes = []
-  classes.push('count')
-  if (240-count < 0){
-    classes.push('err')
+  // Dynamically set class for character count
+  const charCountClasses = ['count'];
+  if (240 - count < 0) {
+    charCountClasses.push('err');
   }
 
-  const onsubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities`
-      console.log('onsubmit payload', message)
-      const res = await fetch(backend_url, {
-        method: "POST",
+      const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/activities`;
+      const response = await fetch(backendUrl, {
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: message,
-          ttl: ttl
-        }),
+        body: JSON.stringify({ message, ttl }),
       });
-      let data = await res.json();
-      if (res.status === 200) {
-        // add activity to the feed
-        props.setActivities(current => [data,...current]);
-        // reset and close the form
-        setCount(0)
-        setMessage('')
-        setTtl('7-days')
-        props.setPopped(false)
+
+      if (response.ok) {
+        const data = await response.json();
+        // Add the new activity to the feed
+        setActivities((current) => [data, ...current]);
+        // Reset the form
+        resetForm();
       } else {
-        console.log(res)
+        console.error('Failed to submit activity:', await response.text());
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error('Error submitting activity:', error);
     }
-  }
+  };
 
-  const textarea_onchange = (event) => {
-    setCount(event.target.value.length);
-    setMessage(event.target.value);
-  }
+  const handleTextareaChange = (event) => {
+    const newMessage = event.target.value;
+    setCount(newMessage.length);
+    setMessage(newMessage);
+  };
 
-  const ttl_onchange = (event) => {
+  const handleTtlChange = (event) => {
     setTtl(event.target.value);
-  }
+  };
 
-  if (props.popped === true) {
-    return (
-      <form 
-        className='activity_form'
-        onSubmit={onsubmit}
-      >
-        <textarea
-          type="text"
-          placeholder="what would you like to say?"
-          value={message}
-          onChange={textarea_onchange} 
-        />
-        <div className='submit'>
-          <div className={classes.join(' ')}>{240-count}</div>
-          <button type='submit'>Crud</button>
-          <div className='expires_at_field'>
-            <BombIcon className='icon' />
-            <select
-              value={ttl}
-              onChange={ttl_onchange} 
-            >
-              <option value='30-days'>30 days</option>
-              <option value='7-days'>7 days</option>
-              <option value='3-days'>3 days</option>
-              <option value='1-day'>1 day</option>
-              <option value='12-hours'>12 hours</option>
-              <option value='3-hours'>3 hours</option>
-              <option value='1-hour'>1 hour </option>
-            </select>
-          </div>
+  const resetForm = () => {
+    setCount(0);
+    setMessage('');
+    setTtl('7-days');
+    setPopped(false);
+  };
+
+  // Render the form only when `popped` is true
+  if (!popped) return null;
+
+  return (
+    <form className="activity_form" onSubmit={handleSubmit}>
+      <textarea
+        type="text"
+        placeholder="What would you like to say?"
+        value={message}
+        onChange={handleTextareaChange}
+      />
+      <div className="submit">
+        <div className={charCountClasses.join(' ')}>{240 - count}</div>
+        <button type="submit">Crud</button>
+        <div className="expires_at_field">
+          <BombIcon className="icon" />
+          <select value={ttl} onChange={handleTtlChange}>
+            <option value="30-days">30 days</option>
+            <option value="7-days">7 days</option>
+            <option value="3-days">3 days</option>
+            <option value="1-day">1 day</option>
+            <option value="12-hours">12 hours</option>
+            <option value="3-hours">3 hours</option>
+            <option value="1-hour">1 hour</option>
+          </select>
         </div>
-      </form>
-    );
-  }
+      </div>
+    </form>
+  );
 }

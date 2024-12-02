@@ -9,7 +9,7 @@ export default function MessageFeed(props) {
       </div>
       <div className='message_feed_collection'>
         {props.messages.map(message => {
-        return  <MessageItem key={message.uuid} message={message} />
+          return <MessageItem key={message.uuid} message={message} />
         })}
       </div>
     </div>
