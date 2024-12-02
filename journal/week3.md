@@ -343,3 +343,111 @@ if (cognitoErrors){
 // just before submit component
 {errors}
 ```
+
+## Signup Page
+
+```js
+import { signUp } from "aws-amplify/auth";
+
+
+const onsubmit = async (event) => {
+  event.preventDefault();
+  setErrors('')
+  try {
+      const { isSignUpComplete, userId, nextStep } = await signUp({
+        username: email,
+        password: password,
+        attributes: {
+            name: name,
+            email: email,
+            preferred_username: username,
+        },
+        autoSignIn: { // optional - enables auto sign in after user is confirmed
+            enabled: true,
+        }
+      });
+      console.log(userId);
+      window.location.href = `/confirm?email=${email}`
+  } catch (error) {
+      console.log(error);
+      setErrors(error.message)
+  }
+  return false
+}
+
+let el_errors;
+if (errors){
+ el_errors = <div className='errors'>{errors}</div>;
+}
+
+//before submit component
+{el_errors}
+```
+
+## Confirmation Page
+
+```js
+const resend_code = async (event) => {
+  setErrors('')
+  try {
+    await Auth.resendSignUp(email);
+    console.log('code resent successfully');
+    setCodeSent(true)
+  } catch (err) {
+    // does not return a code
+    // does cognito always return english
+    // for this to be an okay match?
+    console.log(err)
+    if (err.message == 'Username cannot be empty'){
+      setErrors("You need to provide an email in order to send Resend Activiation Code")   
+    } else if (err.message == "Username/client id combination not found."){
+      setErrors("Email is invalid or cannot be found.")   
+    }
+  }
+}
+
+const onsubmit = async (event) => {
+  event.preventDefault();
+  setErrors('')
+  try {
+    await Auth.confirmSignUp(email, code);
+    window.location.href = "/"
+  } catch (error) {
+    setErrors(error.message)
+  }
+  return false
+}
+```
+
+## Recovery Page
+
+```js
+import { resetPassword, confirmResetPassword } from 'aws-amplify/auth';
+
+const onsubmit_send_code = async (event) => {
+  event.preventDefault();
+  setErrors('')
+  await resetPassword({
+     username
+   })
+     .then((data) => setFormState('confirm_code') )
+     .catch((err) => setErrors(err.message) );
+  return false
+}
+
+const onsubmit_confirm_code = async (event) => {
+  event.preventDefault();
+  setErrors('')
+  if (password == passwordAgain){
+   await confirmResetPassword({
+      username,
+      confirmationCode: code,
+      newPassword: password,
+   });
+    .then((data) => setFormState('success'))
+    .catch((err) => setErrors(err.message) );
+  } else {
+    setErrors('Passwords do not match')
+  }
+  return false
+}

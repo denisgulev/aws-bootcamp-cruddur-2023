@@ -26,6 +26,15 @@ Amplify.configure({
             loginWith: {
                 email: true
             },
+            signUpVerificationMethod: "code",
+            userAttributes: {
+                email: {
+                  required: true,
+                },
+                preferred_username: {
+                  require: true,
+                }
+              },
             passwordFormat: {
                 minLength: 8,
                 requireLowercase: true,

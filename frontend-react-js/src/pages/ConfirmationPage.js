@@ -2,9 +2,7 @@ import './ConfirmationPage.css';
 import React from "react";
 import { useParams } from 'react-router-dom';
 import {ReactComponent as Logo} from '../components/svg/logo.svg';
-
-// [TODO] Authenication
-import Cookies from 'js-cookie'
+import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
 
 export default function ConfirmationPage() {
   const [email, setEmail] = React.useState('');
@@ -22,29 +20,43 @@ export default function ConfirmationPage() {
   }
 
   const resend_code = async (event) => {
-    console.log('resend_code')
-    // [TODO] Authenication
+      console.log('resend_code')
+      setErrors('')
+      try {
+        const { destination, deliveryMedium } = await resendSignUpCode({
+            username: email,
+        });
+        console.log(`A confirmation code has been sent to ${destination}.`);
+        console.log(`Please check your ${deliveryMedium} for the code.`);
+        console.log('code resent successfully');
+        setCodeSent(true)
+      } catch (err) {
+        // does not return a code
+        // does cognito always return english
+        // for this to be an okay match?
+        console.log(err)
+        if (err.message == 'Username cannot be empty'){
+          setErrors("You need to provide an email in order to resend Activation Code")
+        } else if (err.message == "Username/client id combination not found."){
+          setErrors("Email is invalid or cannot be found.")
+        }
+      }
   }
 
   const onsubmit = async (event) => {
-    event.preventDefault();
-    console.log('ConfirmationPage.onsubmit')
-    // [TODO] Authenication
-    if (Cookies.get('user.email') === undefined || Cookies.get('user.email') === '' || Cookies.get('user.email') === null){
-      setErrors("You need to provide an email in order to send Resend Activiation Code")   
-    } else {
-      if (Cookies.get('user.email') === email){
-        if (Cookies.get('user.confirmation_code') === code){
-          Cookies.set('user.logged_in',true)
+      event.preventDefault();
+      setErrors('')
+      try {
+        await confirmSignUp({
+          username: email,
+          confirmationCode: code
+        }).then(_ => {
           window.location.href = "/"
-        } else {
-          setErrors("Code is not valid")
-        }
-      } else {
-        setErrors("Email is invalid or cannot be found.")   
+        })
+      } catch (error) {
+        setErrors(error.message)
       }
-    }
-    return false
+      return false
   }
 
   let el_errors;

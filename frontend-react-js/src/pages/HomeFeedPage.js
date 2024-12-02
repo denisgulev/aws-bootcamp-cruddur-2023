@@ -1,6 +1,6 @@
 import './HomeFeedPage.css';
 import React from "react";
-import { getCurrentUser } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
 import DesktopNavigation  from '../components/DesktopNavigation';
 import DesktopSidebar     from '../components/DesktopSidebar';
@@ -35,19 +35,17 @@ export default function HomeFeedPage() {
   };
 
   const checkAuth = async () => {
-    getCurrentUser()
-        .then(user => {
-          console.log('user', user)
-          return user
-        }).then((cognito_user) => {
-        console.log("cognito_user", cognito_user)
-          setUser({
-            display_name: cognito_user.username,
-            handle: cognito_user.username
-          })
-        }).catch(err => {
-          console.log(err)
-        });
+    fetchUserAttributes().then(attr => {
+      console.log("attributes", attr)
+      return attr
+    }).then(attributes => {
+      setUser({
+        display_name: attributes.name,
+        handle: attributes.preferred_username
+      })
+    }).catch(err => {
+      console.log(err)
+    })
   };
 
   React.useEffect(()=>{
