@@ -11,3 +11,5 @@ watchtower
 #rollbar dependencies
 blinker
 rollbar
+
+python-jose

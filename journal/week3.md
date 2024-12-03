@@ -451,3 +451,26 @@ const onsubmit_confirm_code = async (event) => {
   }
   return false
 }
+```
+
+## Authenticating Server Side
+
+In the `HomeFeedPage.js` add a header to pass along the access token
+
+```js
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("access_token")}`
+  }
+```
+
+In the `app.py`, add cors configuration:
+
+```py
+cors = CORS(
+  app, 
+  resources={r"/api/*": {"origins": origins}},
+  headers=['Content-Type', 'Authorization'], 
+  expose_headers='Authorization',
+  methods="OPTIONS,GET,HEAD,POST"
+)
+```

@@ -12,6 +12,7 @@ export default function ProfileInfo({ user }) {
     try {
       await signOut({ global: true });
       window.location.href = '/';
+      localStorage.removeItem('access_token');
     } catch (error) {
       console.error('Error signing out:', error);
     }

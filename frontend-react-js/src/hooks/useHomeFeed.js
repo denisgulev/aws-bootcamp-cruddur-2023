@@ -10,7 +10,12 @@ export function useHomeFeed() {
   const loadData = async () => {
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`;
-      const response = await fetch(backend_url);
+      const response = await fetch(backend_url, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        method: "GET"
+      });
       if (response.ok) {
         const data = await response.json();
         setActivities(data);
