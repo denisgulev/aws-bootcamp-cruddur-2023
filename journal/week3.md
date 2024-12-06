@@ -474,3 +474,12 @@ cors = CORS(
   methods="OPTIONS,GET,HEAD,POST"
 )
 ```
+
+## JWT Verification
+
+We implemented a custom function to verify the token.
+
+Other options are:
+
+1. AWS API Gateway + Lambda function (which will use "aws-jwt-verify")
+2. Run a SideCare container attached to our Python container
