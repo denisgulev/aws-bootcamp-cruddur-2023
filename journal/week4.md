@@ -202,6 +202,7 @@ psql $CON_URL cruddur < $schema_path
 
 ## Shell script to load the seed data
 
+`bin/db-seed`
 ```sh
 #! /bin/bash
 
@@ -231,6 +232,28 @@ else
 fi
 ```
 
+## Create a "setup" script
+
+
+`bin/db-setup`
+```sh
+#! /bin/bash
+
+-e # stop the execution if it fails at any point
+
+CYAN='\033[1;36m'
+NO_COLOR='\033[0m'
+LABEL="db-setup"
+printf "${CYAN}== ${LABEL}${NO_COLOR}\n"
+
+bin_path="$(realpath .)/bin"
+
+source "$bin_path/db-drop"
+source "$bin_path/db-create"
+source "$bin_path/db-schema-load"
+source "$bin_path/db-seed"
+```
+
 ## Make prints nicer
 
 We can make prints for our shell scripts coloured so we can see what we're doing:
@@ -243,4 +266,127 @@ CYAN='\033[1;36m'
 NO_COLOR='\033[0m'
 LABEL="db-schema-load"
 printf "${CYAN}== ${LABEL}${NO_COLOR}\n"
+```
+
+## RDS Security Best Practices
+
+1. Make sure the RDS instance is created in your region
+2. Use a custom port
+3. "publicly accessible" should be set to "No"
+4. deletion protection should be enabled
+5. in security groups, only allow certain IPs for inbound connections
+6. create custom VPCs, restricting the IPs that can connect to the RDS instance
+7. CloudTrail helps monitor and log alerts on malicious RDS behaviour
+
+
+## Install Postgres Client
+
+```yml
+  backend-flask:
+    environment:
+      CONNECTION_URL: "${CONNECTION_URL}"
+```
+
+https://www.psycopg.org/psycopg3/
+
+We'll add the following to our `requirments.txt`
+
+```
+psycopg[binary]
+psycopg[pool]
+```
+
+```
+pip install -r requirements.txt
+```
+
+We are going to make use of "Connection pooling" to manage connections to the database.
+
+A connection pool is an object managing a set of connections and allowing their use 
+in functions needing one. Because the time to establish a new connection can be relatively long, 
+keeping connections open can reduce latency.
+
+## DB Object and Connection Pooling
+
+1. Add "CONNECTION_URL" to backend-flask environment variables in the docker-compose file
+```yaml
+CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
+```
+2. Create a new file `db.py` in the `backend-flask/lib` directory
+```
+from psycopg_pool import ConnectionPool
+import os
+
+
+def query_wrap_object(template):
+    return f'''
+      (SELECT COALESCE(row_to_json(object_row),'{{}}'::json) FROM (
+      {template}
+      ) object_row);
+    '''
+
+
+def query_wrap_array(template):
+    return f'''
+      (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
+      {template}
+      ) array_row);
+    '''
+
+
+connection_url = os.getenv("CONNECTION_URL")
+pool = ConnectionPool(connection_url)
+```
+3. Integrate pooling inside home_activities.py
+```
+from lib.db import pool, query_wrap_array
+
+# Define a logger to log information during the process
+logging.basicConfig(
+  level=logging.DEBUG,  # Set to DEBUG to capture all levels of logs
+  format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+  handlers=[logging.StreamHandler()]  # Ensures logs are directed to the console
+)
+
+logger = logging.getLogger(__name__)
+
+class HomeActivities:
+  def run(cognito_user_id=None):
+
+    with tracer.start_as_current_span("home-activities-mock-data"):
+      ....
+      ....
+      
+      sql = query_wrap_array("""
+        SELECT
+          activities.uuid,
+          users.display_name,
+          users.handle,
+          activities.message,
+          activities.replies_count,
+          activities.reposts_count,
+          activities.likes_count,
+          activities.reply_to_activity_uuid,
+          activities.expires_at,
+          activities.created_at
+        FROM public.activities
+        LEFT JOIN public.users ON users.uuid = activities.user_uuid
+        ORDER BY activities.created_at DESC
+      """)
+
+      try:
+        logger.info("Attempting to acquire a database connection...")
+        with pool.connection() as conn:  # Acquire a connection from the pool
+          logger.info("Database connection acquired successfully.")
+          with conn.cursor() as cur:
+            logger.info(f"Executing query... {sql}")
+            cur.execute(sql)
+            json = cur.fetchone()  # Fetch a single row from the table
+
+            logger.info("Query executed successfully. Returning results.")
+            if json:
+              return json[0]
+      except Exception as e:
+        logger.error("An error occurred while fetching data.", exc_info=True)
+      return None
 ```

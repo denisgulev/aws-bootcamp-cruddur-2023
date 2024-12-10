@@ -13,3 +13,7 @@ blinker
 rollbar
 
 python-jose
+
+# postgresql
+psycopg[binary]
+psycopg[pool]
