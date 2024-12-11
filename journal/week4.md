@@ -390,3 +390,61 @@ class HomeActivities:
         logger.error("An error occurred while fetching data.", exc_info=True)
       return None
 ```
+
+## Provision RDS
+
+```
+aws rds create-db-instance \
+--db-instance-identifier cruddur-db-instance \
+--db-instance-class db.t4g.micro \
+--engine postgres \
+--engine-version  14.9 \
+--master-username root \
+--master-user-password huEE33z2Qvl383 \
+--allocated-storage 20 \
+--availability-zone eu-central-1a \
+--backup-retention-period 0 \
+--port 5432 \
+--no-multi-az \
+--db-name cruddur \
+--storage-type gp2 \
+--publicly-accessible \
+--storage-encrypted \
+--enable-performance-insights \
+--performance-insights-retention-period 7 \
+--no-deletion-protection
+```
+
+## Test remote access
+
+To allow our local machine to connect to the RDS instance, we need to add our IP address to the security group of the RDS instance.
+
+1. go to RDS instance
+2. access "VPC security group"
+3. edit inbound rules, by adding local IP address to the security group (use ```curl ifconfig.me``` to find out your current IP)
+4. run the following command
+```
+psql postgresql://root:huEE33z2Qvl383@<rds-endpoint>:5432/cruddur
+```
+
+## Connect to RDS from local environment
+
+In order to connect to the RDS instance we need to provide our Gitpod IP and whitelist for inbound traffic on port 5432.
+
+We'll create an inbound rule for Postgres (5432) and provide the GITPOD ID.
+
+We'll get the security group rule id so we can easily modify it in the future from the terminal here in Gitpod.
+
+```sh
+export DB_SG_ID="<security-group-id>"
+export DB_SG_RULE_ID="<security-group-rule-id>"
+```
+
+Whenever we need to update our security groups we can do this for access.
+```sh
+aws ec2 modify-security-group-rules \
+    --group-id $DB_SG_ID \
+    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=localdev,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$(curl ifconfig.me)/32}"
+```
+
+https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/modify-security-group-rules.html#examples
