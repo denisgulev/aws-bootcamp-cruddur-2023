@@ -1,7 +1,9 @@
 services:
   backend-flask:
     environment:
-      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
+      CONNECTION_URL: "${PROD_CONNECTION_URL}"
+      # below is CONNECTION_URL for local db
+#      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
       FRONTEND_URL: "http://localhost:3000"
       BACKEND_URL: "http://localhost:4567"
       OTEL_SERVICE_NAME: "backend-flask"

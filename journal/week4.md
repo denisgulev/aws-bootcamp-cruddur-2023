@@ -448,3 +448,14 @@ aws ec2 modify-security-group-rules \
 ```
 
 https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/modify-security-group-rules.html#examples
+
+## Load schema in RDS
+
+To load the db-schema in RDS:
+1. make sure RDS is running
+2. make sure $PROD_CONNECT_URL is set correctly -> ```export PROD_CONNECTION_URL="<rds-endpoint>"```
+3. execute "db-schema-load" script, passing "prod" as an argument
+4. test that the schema is loaded correctly:
+   1. connect to RDS -> ```./bin/db-connect prod```
+   2. check "cruddur" database exists --> ```\l```
+   3. check tables are created successful -> ```\dt```
