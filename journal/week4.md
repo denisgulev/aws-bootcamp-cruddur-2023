@@ -459,3 +459,71 @@ To load the db-schema in RDS:
    1. connect to RDS -> ```./bin/db-connect prod```
    2. check "cruddur" database exists --> ```\l```
    3. check tables are created successful -> ```\dt```
+
+
+## Save user in db after registration
+
+In order to execute CRUD operations for the activities (posts), we need to save the users in RDS.
+
+We can achieve this by triggering a Lambda function right after the registration with Cognito is completed.
+
+1. https://medium.com/@jenniferjasperse/how-to-use-postgres-with-aws-lambda-and-python-44e9d9154513
+download required binaries and store them in the same folder as "lambda_function.py" file
+   1. lambda_function.py is as follows
+```python
+import json
+import psycopg2
+import sys
+import os
+
+print("*** START")
+
+try:
+   print("*** TRYING TO CONNECT TO RDS")
+   conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
+except (Exception, psycopg2.DatabaseError) as error:
+   print("ERROR: Could not connect to postgres instance.")
+   print(error)
+   sys.exit()
+
+print("SUCCESS: Connection to RDS Postgres succeeded.")
+
+def lambda_handler(event, context):
+   user = event['request']['userAttributes']
+   print("USER: ", user)
+   user_display_name   = user['name']
+   user_email          = user['email']
+   user_handle         = user['preferred_username']
+   user_cognito_id     = user['sub']
+
+   cur = conn.cursor()
+   sql = f"""
+     INSERT INTO public.users (
+             display_name, 
+             email, 
+             handle, 
+             cognito_user_id
+         ) 
+         VALUES(
+             '{user_display_name}', 
+             '{user_email}', 
+             '{user_handle}', 
+             '{user_cognito_id}'
+         )
+   """
+   print("SQL query to be executed: ", sql)
+   cur.execute(sql)
+   conn.commit()
+   
+   return event
+```
+2. zip the content of this folder -> ```zip -r aws-pg2.zip .```
+3. create a lambda function on AWS and "Upload from" zip file, by selecting the zip created at point 2
+4. create a role with the right permissions -> https://codedamn.com/news/aws/provided-execution-role-does-not-have-permissions-to-call-createnetworkinterface-on-ec2
+   1. or modify lambda's execution Role, by adding "AWSLambdaVPCAccessExecutionRole" permission
+5. add the lambda to a VPC
+6. add ENV variable in lambda configuration: ```CONNECTION_URL=<postgresql-rds-connection-string>```
+7. go to "user-pool -> Authentication -> Extensions -> Add Lambda trigger"
+8. create a new user
+9. check lambda logs
+10. check the user is created in database
