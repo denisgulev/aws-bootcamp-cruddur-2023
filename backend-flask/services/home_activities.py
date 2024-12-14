@@ -31,6 +31,4 @@ class HomeActivities:
         ORDER BY activities.created_at DESC
       """
 
-      db.query_array(sql)
-
-      return None
+      return db.query_array(sql)
