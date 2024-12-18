@@ -19,7 +19,9 @@ class Db:
         connection_url = os.getenv("CONNECTION_URL")
         self.pool = ConnectionPool(connection_url)
 
-    def print_sql(self,title,sql, params={}):
+    def print_sql(self, title, sql, params=None):
+        if params is None:
+            params = {}
         cyan = '\033[96m'
         no_color = '\033[0m'
         logger.info(f'{cyan} SQL STATEMENT-[{title}]------{no_color}')
@@ -53,6 +55,8 @@ class Db:
 
     # when you want to commit data to the database
     def query_commit(self, sql, params=None):
+        if params is None:
+            params = {}
         self.print_sql('commit',sql,params)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
@@ -63,7 +67,9 @@ class Db:
         except Exception as e:
             self.print_sql_err(e)
     # when you want to retrieve an array of json object from the database
-    def query_array(self, sql, params={}):
+    def query_array(self, sql, params=None):
+        if params is None:
+            params = {}
         print(params)
         self.print_sql('query array',sql,params)
         self.print_params(params)
@@ -91,6 +97,8 @@ class Db:
 
     # when you want to retrieve a json object from the database
     def query_object_json(self, sql, params=None):
+        if params is None:
+            params = {}
         try:
             if params is None:
                 params = {}
@@ -111,7 +119,9 @@ class Db:
             self.print_sql_err(e)
 
     # when we want to return a single value
-    def query_value(self,sql,params={}):
+    def query_value(self,sql,params=None):
+        if params is None:
+            params = {}
         self.print_sql('value',sql,params)
 
         with self.pool.connection() as conn:
