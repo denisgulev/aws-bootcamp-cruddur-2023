@@ -54,9 +54,9 @@ class Db:
         self.print_sql('commit',sql)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
-                cur = conn.cursor()
-                cur.execute(sql)
-                conn.commit()
+                with conn.cursor() as cur:
+                    cur.execute(sql)
+                    conn.commit()
 
         except Exception as e:
             self.print_sql_err(e)
@@ -66,17 +66,24 @@ class Db:
         self.print_sql('query array',sql)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
-                cur = conn.cursor()
-                wrapped_query = self.query_wrap_array(sql)
-                cur.execute(sql, wrapped_query)
-                json = cur.fetchone()  # Fetch a single row from the table
+                with conn.cursor() as cur:
+                    wrapped_query = self.query_wrap_array(sql)
+                    logger.debug(f"wrapped_query: {wrapped_query}")
+                    cur.execute(wrapped_query)
+                    logger.debug("after cur.execute")
+                    json = cur.fetchone()  # Fetch a single row from the table
+                    logger.debug("after cur.fetchone()")
+                    logger.debug(f"json: {json}")
 
-                # Handle cases where fetchone() returns None
-                if json and json[0] is not None:
-                    return json[0]
-                else:
-                    return []  # Default to an empty array if no data
+                    # Handle cases where fetchone() returns None
+                    if json and json[0] is not None:
+                        logger.debug("before return json[0]")
+                        return json[0]
+                    else:
+                        logger.debug("before return []")
+                        return []  # Default to an empty array if no data
         except Exception as e:
+            logger.debug("before print_sql_err")
             self.print_sql_err(e)
 
     # when you want to retrieve a json object from the database
@@ -117,14 +124,14 @@ class Db:
         return f'''
           (SELECT COALESCE(row_to_json(object_row),'{{}}'::json) FROM (
           {template}
-          ) object_row);
+          ) as object_row);
         '''
 
     def query_wrap_array(self, template):
         return f'''
           (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
           {template}
-          ) array_row);
+          ) as array_row);
         '''
 
 db = Db()
