@@ -17,3 +17,5 @@ python-jose
 # postgresql
 psycopg[binary]
 psycopg[pool]
+
+boto3

@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-slim
 
 # set the execution starting point in the container
 WORKDIR /backend-flask

@@ -19,24 +19,26 @@ class Db:
         connection_url = os.getenv("CONNECTION_URL")
         self.pool = ConnectionPool(connection_url)
 
-    def print_sql(self,title,sql):
+    def print_sql(self,title,sql, params={}):
         cyan = '\033[96m'
         no_color = '\033[0m'
         logger.info(f'{cyan} SQL STATEMENT-[{title}]------{no_color}')
         logger.info(sql)
+        logger.info(params)
+
 
     def print_params(self,params):
         blue = '\033[94m'
         no_color = '\033[0m'
         logger.info(f'{blue} SQL Params:{no_color}')
         for key, value in params.items():
-            logger.info(key, ":", value)
+            print("key:", key, "value:", value)
 
     # when you want to commit data to the database, returning the uuid
     def query_commit_with_returning_id(self, sql, params=None):
         if params is None:
             params = {}
-        self.print_sql('commit with returning',sql)
+        self.print_sql('commit with returning',sql,params)
         self.print_params(params)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
@@ -50,8 +52,8 @@ class Db:
             self.print_sql_err(e)
 
     # when you want to commit data to the database
-    def query_commit(self, sql):
-        self.print_sql('commit',sql)
+    def query_commit(self, sql, params=None):
+        self.print_sql('commit',sql,params)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
                 with conn.cursor() as cur:
@@ -60,16 +62,17 @@ class Db:
 
         except Exception as e:
             self.print_sql_err(e)
-
     # when you want to retrieve an array of json object from the database
-    def query_array(self, sql):
-        self.print_sql('query array',sql)
+    def query_array(self, sql, params={}):
+        print(params)
+        self.print_sql('query array',sql,params)
+        self.print_params(params)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
                 with conn.cursor() as cur:
                     wrapped_query = self.query_wrap_array(sql)
                     logger.debug(f"wrapped_query: {wrapped_query}")
-                    cur.execute(wrapped_query)
+                    cur.execute(wrapped_query, params)
                     logger.debug("after cur.execute")
                     json = cur.fetchone()  # Fetch a single row from the table
                     logger.debug("after cur.fetchone()")
@@ -92,7 +95,7 @@ class Db:
             if params is None:
                 params = {}
 
-            self.print_sql('json',sql)
+            self.print_sql('json',sql,params)
             self.print_params(params)
             wrapped_sql = self.query_wrap_object(sql)
 
@@ -106,6 +109,16 @@ class Db:
                         return json[0]
         except Exception as e:
             self.print_sql_err(e)
+
+    # when we want to return a single value
+    def query_value(self,sql,params={}):
+        self.print_sql('value',sql,params)
+
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql,params)
+                json = cur.fetchone()
+                return json[0]
 
     def print_sql_err(self, err):
         err_type, err_obj, traceback = sys.exc_info()

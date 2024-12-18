@@ -1,0 +1,66 @@
+#! /usr/bin/python3
+
+import boto3
+import sys
+import json
+import os
+
+# Calculate paths
+current_path = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+parent_path = os.path.abspath(os.path.join(current_path, '..', '..', '..'))
+
+# Debugging paths
+print(f"Current path: {current_path}")
+print(f"Parent path: {parent_path}")
+
+# Add the parent path to sys.path and import the module
+if parent_path not in sys.path:
+  sys.path.append(parent_path)
+
+from lib.db import db
+
+attrs = {
+  'endpoint_url': 'http://localhost:8000'
+}
+
+if len(sys.argv) == 2:
+  if "prod" in sys.argv[1]:
+    attrs = {}
+
+ddb = boto3.client('dynamodb', **attrs)
+table_name = 'cruddur-messages'
+
+def get_my_user_uuid():
+  sql = """
+        SELECT 
+          users.uuid,
+          users.handle
+        FROM users
+        WHERE
+          users.handle IN(%(my_handle)s)
+      """
+
+  uuid = db.query_value(sql,{
+    'my_handle': 'alice'
+  })
+
+  return uuid
+
+
+brown_user_uuid = get_my_user_uuid()
+
+# define the query parameters
+query_params = {
+  'TableName': table_name,
+  'KeyConditionExpression': 'pk = :pkey',
+  'ExpressionAttributeValues': {
+    ':pkey': {'S': f"GRP#{brown_user_uuid}"}
+  },
+  'ReturnConsumedCapacity': 'TOTAL'
+}
+
+# query the table
+response = ddb.query(**query_params)
+
+# print the items returned by the query
+print(json.dumps(response, sort_keys=True, indent=2))
