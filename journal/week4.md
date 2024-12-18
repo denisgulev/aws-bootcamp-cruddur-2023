@@ -134,12 +134,12 @@ psql $CON_URL
 We'll make it executable:
 
 ```sh
-chmod u+x bin/db-connect
+chmod u+x bin/connect
 ```
 
 To execute the script:
 ```sh
-./bin/db-connect
+./bin/connect
 ```
 
 ## Shell script to drop the database
