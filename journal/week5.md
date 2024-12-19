@@ -547,3 +547,9 @@ for item in reversed_items:
   formatted_datetime = dt_object.strftime('%Y-%m-%d %I:%M %p')
   print(f'{sender_handle: <16}{formatted_datetime: <22}{message[:40]}...')
 ```
+
+### Implementing functionality in code to interact with Dynamodb
+
+1. Create a "ddb.py" file in the "lib" folder
+2. Create "list-users" script to retrieve users' ids from Cognito
+3. Create "update-cognito-users-ids" to update users' ids in the database

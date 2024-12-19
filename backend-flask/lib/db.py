@@ -61,7 +61,7 @@ class Db:
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
                 with conn.cursor() as cur:
-                    cur.execute(sql)
+                    cur.execute(sql, params)
                     conn.commit()
 
         except Exception as e:

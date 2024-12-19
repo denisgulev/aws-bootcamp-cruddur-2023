@@ -1,0 +1,60 @@
+#! /usr/bin/python3
+
+import boto3
+import os
+import sys
+
+# Calculate paths
+current_path = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+parent_path = os.path.abspath(os.path.join(current_path, '..', '..'))
+
+# Debugging paths
+print(f"Current path: {current_path}")
+print(f"Parent path: {parent_path}")
+
+# Add the parent path to sys.path and import the module
+if parent_path not in sys.path:
+    sys.path.append(parent_path)
+
+from lib.db import db
+
+def update_users_with_cognito_users_ids(handle, sub):
+    sql = """
+        UPDATE public.users
+        SET cognito_user_id = %(sub)s
+        WHERE handle = %(handle)s;
+    """
+
+    db.query_commit(sql, {'handle': handle, 'sub': sub})
+
+def get_cognito_users_ids():
+    userpool_id = os.getenv('AWS_USER_POOL_ID')
+    client = boto3.client('cognito-idp')
+    params = {
+        'UserPoolId': userpool_id,
+        'AttributesToGet': [
+            'preferred_username',
+            'sub'
+        ]
+    }
+
+    response = client.list_users(**params)
+    users = response['Users']
+
+    dict_users = {}
+    for user in users:
+        attrs   = user['Attributes']
+        sub     = next((a for a in attrs if a['Name'] == 'sub'), None)
+        handle  = next((a for a in attrs if a['Name'] == 'preferred_username'), None)
+        dict_users[handle['Value']] = sub['Value']
+
+    return dict_users
+
+users = get_cognito_users_ids()
+
+for handle,sub in users.items():
+    print(f"Updating user: {handle} with cognito_user_id: {sub}")
+    update_users_with_cognito_users_ids(
+        handle=handle,
+        sub=sub
+    )
