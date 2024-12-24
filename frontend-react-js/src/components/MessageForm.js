@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 export default function MessageForm({ setMessages }) {
   const [message, setMessage] = useState('');
   const [charCount, setCharCount] = useState(0);
-  const { handle: receiverHandle } = useParams();
+  const params = useParams();
 
   const isCharCountValid = charCount <= 1024;
 
@@ -22,16 +22,22 @@ export default function MessageForm({ setMessages }) {
     const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/messages`;
 
     try {
+      let json = {
+        message: message
+      }
+      if (params.handle) {
+        json.handle = params.handle
+      } else {
+        json.message_group_uuid = params.message_group_uuid
+      }
       const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message,
-          user_receiver_handle: receiverHandle,
-        }),
+        body: JSON.stringify(json)
       });
 
       if (response.ok) {
