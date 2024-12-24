@@ -3,7 +3,7 @@
 import boto3
 import sys
 import json
-import datetime
+from datetime import datetime
 
 attrs = {
   'endpoint_url': 'http://localhost:8000'
@@ -15,6 +15,7 @@ if len(sys.argv) == 2:
 
 ddb = boto3.client('dynamodb', **attrs)
 table_name = 'cruddur-messages'
+current_year = str(datetime.now().year)
 
 message_group_uuid = "5ae290ed-55d1-47a0-bc6d-fe2bc2700399"
 
@@ -25,7 +26,7 @@ query_params = {
   'ScanIndexForward': True,  # sort by descending order
   'Limit': 20,
   'ExpressionAttributeValues': {
-    ':year': {'S': '2024'},
+    ':year': {'S': current_year},
     # ':start_date': {'S': '2024-12-01T00:00:00.000000+00:00'},
     # ':end_date': {'S': '2024-12-31T23:59:59.999999+00:00'},
     ':pkey': {'S': f"MSG#{message_group_uuid}"}
@@ -44,9 +45,9 @@ print(json.dumps(response, sort_keys=True, indent=2))
 print(json.dumps(response['ConsumedCapacity'], sort_keys=True, indent=2))
 
 items = response['Items']
-reversed_items = items[::-1]
+items.reverse()
 
-for item in reversed_items:
+for item in items:
   sender_handle = item['user_handle']['S']
   message       = item['message']['S']
   timestamp     = item['sk']['S']

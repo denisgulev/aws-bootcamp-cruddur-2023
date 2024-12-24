@@ -24,7 +24,6 @@ export default function MessageGroupsPage() {
       let resJson = await res.json();
       if (res.status === 200) {
         setMessageGroups(resJson)
-        console.log("SAVED MESSAGE GROUP:", messageGroups)
       } else {
         console.log(res)
       }

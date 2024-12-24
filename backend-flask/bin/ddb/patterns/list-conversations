@@ -4,6 +4,7 @@ import boto3
 import sys
 import json
 import os
+from datetime import datetime
 
 # Calculate paths
 current_path = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
@@ -48,13 +49,15 @@ def get_my_user_uuid():
 
 
 brown_user_uuid = get_my_user_uuid()
+current_year = str(datetime.now().year)
 
 # define the query parameters
 query_params = {
   'TableName': table_name,
-  'KeyConditionExpression': 'pk = :pk',
+  'KeyConditionExpression': 'pk = :pk AND begins_with(sk, :year)',
   'ScanIndexForward': False,
   'ExpressionAttributeValues': {
+    ':year': {'S': current_year},
     ':pk': {'S': f"GRP#{brown_user_uuid}"}
   },
   'ReturnConsumedCapacity': 'TOTAL'

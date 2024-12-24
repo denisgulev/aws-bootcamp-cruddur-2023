@@ -555,3 +555,4 @@ for item in reversed_items:
 3. Create "update-cognito-users-ids" to update users' ids in the database. (This is to be run after the "setup" script)
 4. When we start docker compose with local PostgreSQL and DynamoDB, we need to seed data in both the databases, 
    ensuring the user_uuid's references in DynamoDB reflect the correct UUIDs from PostgreSQL database.
+5. Implemented "messages.py" in order to retrieve message of a specific message_group
