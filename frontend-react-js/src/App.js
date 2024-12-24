@@ -18,35 +18,35 @@ import {
 import { Amplify } from 'aws-amplify';
 
 Amplify.configure({
-    Auth: {
-        Cognito: {
-            // REQUIRED - Amazon Cognito User Pool ID
-            userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,
-            userPoolClientId: process.env.REACT_APP_CLIENT_ID,
-            loginWith: {
-                email: true
-            },
-            signUpVerificationMethod: "code",
-            userAttributes: {
-                email: {
-                  required: true,
-                },
-                preferred_username: {
-                  require: true,
-                }
-              },
-            passwordFormat: {
-                minLength: 8,
-                requireLowercase: true,
-                requireUppercase: true,
-                requireNumbers: true,
-                requireSpecialCharacters: true,
-            }
+  Auth: {
+    Cognito: {
+      // REQUIRED - Amazon Cognito User Pool ID
+      userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,
+      userPoolClientId: process.env.REACT_APP_CLIENT_ID,
+      loginWith: {
+        email: true
+      },
+      signUpVerificationMethod: "code",
+      userAttributes: {
+        email: {
+          required: true,
+        },
+        preferred_username: {
+          require: true,
         }
+      },
+      passwordFormat: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireNumbers: true,
+        requireSpecialCharacters: true,
+      }
     }
+  }
 });
 
-console.log("Current config: ", Amplify.getConfig())
+console.log("Amplify Current config: ", Amplify.getConfig())
 
 const router = createBrowserRouter([
   {
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
     element: <NotificationsFeedPage />
   },
   {
-    path: "/@:handle",
+    path: "/:handle",
     element: <UserFeedPage />
   },
   {
@@ -66,7 +66,7 @@ const router = createBrowserRouter([
     element: <MessageGroupsPage />
   },
   {
-    path: "/messages/@:handle",
+    path: "/messages/:message_group_uuid",
     element: <MessageGroupPage />
   },
   {

@@ -9,8 +9,6 @@ import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
 import { useHomeFeed } from '../hooks/useHomeFeed';
 
 export default function UserFeedPage() {
-  const [popped, setPopped] = useState([]);
-  const [user, setUser] = useState(null);
   const dataFetchedRef = useRef(false);
   const { handle } = useParams();
   const title = `@${handle}`;
@@ -18,19 +16,8 @@ export default function UserFeedPage() {
   console.log("title", title)
 
   // Use the useAuth hook to get the authenticated user
-  const authUser = useAuth(); // Assuming useAuth provides the current authenticated user
-
-  const { activities, setActivities } = useHomeFeed();
-
-  // Set user if authenticated
-  useEffect(() => {
-    if (authUser) {
-      setUser({
-        display_name: authUser.display_ame,
-        handle: authUser.handle,
-      });
-    }
-  }, [authUser]);
+  const { user } = useAuth(); // Assuming useAuth provides the current authenticated user
+  const { popped, setPopped, activities, setActivities } = useHomeFeed();
 
   return (
     <article>

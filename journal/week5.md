@@ -200,11 +200,11 @@ def get_user_uuids():
       """
 
     users = db.query_array(sql,{
-        'my_handle': 'alice',
+        'my_handle': 'denis',
         'other_handle': 'bob'
     })
 
-    my_user    = next((item for item in users if item["handle"] == 'alice'), None)
+    my_user    = next((item for item in users if item["handle"] == 'denis'), None)
     other_user = next((item for item in users if item["handle"] == 'bob'), None)
     results = {
         'my_user': my_user,
@@ -465,7 +465,7 @@ def get_my_user_uuid():
       """
 
   uuid = db.query_value(sql,{
-    'my_handle': 'alice'
+    'my_handle': 'denis'
   })
 
   return uuid
@@ -552,4 +552,6 @@ for item in reversed_items:
 
 1. Create a "ddb.py" file in the "lib" folder
 2. Create "list-users" script to retrieve users' ids from Cognito
-3. Create "update-cognito-users-ids" to update users' ids in the database
+3. Create "update-cognito-users-ids" to update users' ids in the database. (This is to be run after the "setup" script)
+4. When we start docker compose with local PostgreSQL and DynamoDB, we need to seed data in both the databases, 
+   ensuring the user_uuid's references in DynamoDB reflect the correct UUIDs from PostgreSQL database.

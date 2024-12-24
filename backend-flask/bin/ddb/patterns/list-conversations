@@ -41,7 +41,7 @@ def get_my_user_uuid():
       """
 
   uuid = db.query_value(sql,{
-    'my_handle': 'alice'
+    'my_handle': 'denis'
   })
 
   return uuid

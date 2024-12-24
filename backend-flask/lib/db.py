@@ -1,6 +1,7 @@
 from psycopg_pool import ConnectionPool
 import os, sys
 import logging
+from flask import current_app as app
 
 logging.basicConfig(
     level=logging.DEBUG,  # Set to DEBUG to capture all levels of logs
@@ -14,6 +15,20 @@ class Db:
     def __init__(self):
         self.pool = None
         self.init_pool()
+
+    def template(self,*args):
+        pathing = list((app.root_path,'db','sql',) + args)
+        pathing[-1] = pathing[-1] + ".sql"
+
+        template_path = os.path.join(*pathing)
+
+        green = '\033[92m'
+        no_color = '\033[0m'
+        logger.info(f'{green} Load SQL Template: {template_path} {no_color}')
+
+        with open(template_path, 'r') as f:
+            template_content = f.read()
+        return template_content
 
     def init_pool(self):
         connection_url = os.getenv("CONNECTION_URL")
@@ -34,7 +49,8 @@ class Db:
         no_color = '\033[0m'
         logger.info(f'{blue} SQL Params:{no_color}')
         for key, value in params.items():
-            print("key:", key, "value:", value)
+            logger.info("key:", key)
+            logger.info("value:", value)
 
     # when you want to commit data to the database, returning the uuid
     def query_commit_with_returning_id(self, sql, params=None):
@@ -70,9 +86,7 @@ class Db:
     def query_array(self, sql, params=None):
         if params is None:
             params = {}
-        print(params)
         self.print_sql('query array',sql,params)
-        self.print_params(params)
         try:
             with self.pool.connection() as conn:  # Acquire a connection from the pool
                 with conn.cursor() as cur:
@@ -135,7 +149,7 @@ class Db:
 
         line_num = traceback.tb_lineno
 
-        print("\npsycopg ERROR:", err, "on line number:", line_num)
+        logger.error(f"\npsycopg ERROR: {err}, on line number: {line_num}")
         # print("\npsycopg traceback:", traceback, "  type:", err_type)
         #
         # print("\nextensions.Diagnostics:", err.diag)

@@ -1,9 +1,9 @@
 services:
   backend-flask:
     environment:
-      CONNECTION_URL: "${PROD_CONNECTION_URL}"
+#      CONNECTION_URL: "${PROD_CONNECTION_URL}"
       # below is CONNECTION_URL for local db
-#      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
+      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
       FRONTEND_URL: "http://localhost:3000"
       BACKEND_URL: "http://localhost:4567"
       OTEL_SERVICE_NAME: "backend-flask"
@@ -23,6 +23,8 @@ services:
     # mapping local <-> container folder, allows us to reflect local changes inside the container
     volumes:
       - ./backend-flask:/backend-flask
+    networks:
+      - internal-network
   frontend-react-js:
     environment:
       REACT_APP_BACKEND_URL: "http://localhost:4567"
@@ -37,6 +39,8 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend-react-js:/frontend-react-js
+    networks:
+      - internal-network
   dynamodb-local:
     # https://stackoverflow.com/questions/67533058/persist-local-dynamodb-data-in-volumes-lack-permission-unable-to-open-databa
     # We needed to add user:root to get this working.
@@ -49,6 +53,8 @@ services:
     volumes:
       - "./docker/dynamodb:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
+    networks:
+      - internal-network
   db:
     image: postgres:13-alpine
     restart: always
@@ -59,6 +65,8 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - internal-network
 
 # the name flag is a hack to change the default prepend folder
 # name when outputting the image names

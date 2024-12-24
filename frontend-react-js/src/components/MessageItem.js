@@ -24,7 +24,7 @@ export default function MessageItem({ message }) {
     <Link className='message_item' to={`/messages/@` + message.handle}>
       <div className='message_avatar'></div>
       <div className='message_content'>
-        <div classsName='message_meta'>
+        <div className='message_meta'>
           <div className='message_identity'>
             <div className='display_name'>{message.display_name}</div>
             <div className="handle">@{message.handle}</div>
