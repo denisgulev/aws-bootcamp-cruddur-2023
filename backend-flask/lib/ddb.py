@@ -11,15 +11,19 @@ logger = logging.getLogger(__name__)
 class Ddb:
     @staticmethod
     def client():
-        logger.info("**** creating dynamodb client ****")
-        endpoint_url = os.getenv("AWS_ENDPOINT_URL", "http://dynamodb-local:8000")
+        logger.info("**** Creating DynamoDB client ****")
+        endpoint_url = os.getenv("AWS_ENDPOINT_URL", None)
         aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
         aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-        attrs = {
-            'endpoint_url': endpoint_url,
-            'aws_access_key_id': aws_access_key_id,
-            'aws_secret_access_key': aws_secret_access_key
-        }
+
+        if endpoint_url is None:
+            attrs = {}
+        else:
+            attrs = {
+                'endpoint_url': "http://dynamodb-local:8000",
+                'aws_access_key_id': aws_access_key_id,
+                'aws_secret_access_key': aws_secret_access_key
+            }
 
         dynamodb = boto3.resource('dynamodb', **attrs)
         return dynamodb

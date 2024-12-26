@@ -1,5 +1,5 @@
 .idea
-/aws/lambdas/aws_psycopg2-1.3.8.dist-info/
-/aws/lambdas/psycopg2/
-/aws/lambdas/psycopg2_binary.libs/
-/aws/lambdas/aws-pg2.zip
+/aws/lambdas-with-external-deps/aws_psycopg2-1.3.8.dist-info/
+/aws/lambdas-with-external-deps/psycopg2/
+/aws/lambdas-with-external-deps/psycopg2_binary.libs/
+/aws/lambdas-with-external-deps/aws-pg2.zip

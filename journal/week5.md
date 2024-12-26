@@ -557,3 +557,94 @@ for item in reversed_items:
    ensuring the user_uuid's references in DynamoDB reflect the correct UUIDs from PostgreSQL database.
 5. Implemented "messages.py" in order to retrieve message of a specific message_group
 6. Inside "create_message.py" we added operations to create a new message inside a message_group and create a new message_group
+
+### DynamoDB Streams - trigger to update message groups
+
+1. execute ./bin/ddb/schema-load prod -> to create the table on DynamoDB online
+2. turn on "Streams" with "New image" view type
+3. go to VPC aws -> endpoints -> create endpoint -> 
+   1. Name -> 
+   2. Type -> AWS Services
+   3. Services -> choose the service we want to connect to
+   4. Network settings -> choose a VPC already existing
+   5. Route tables -> check the existing one
+   6. Policy -> Full Access
+4. create a lambda with the following code:
+   ```python
+      import json
+      import boto3
+      from boto3.dynamodb.conditions import Key, Attr
+   
+      dynamodb = boto3.resource(
+      'dynamodb',
+      region_name='eu-south-1',
+      endpoint_url="http://dynamodb.eu-south-1.amazonaws.com"
+      )
+      
+      def lambda_handler(event, context):
+      pk = event['Records'][0]['dynamodb']['Keys']['pk']['S']
+      sk = event['Records'][0]['dynamodb']['Keys']['sk']['S']
+      if pk.startswith('MSG#'):
+      group_uuid = pk.replace("MSG#","")
+      message = event['Records'][0]['dynamodb']['NewImage']['message']['S']
+      print("GRUP ===>",group_uuid,message)
+   
+       table_name = 'cruddur-messages'
+       index_name = 'message-group-sk-index'
+       table = dynamodb.Table(table_name)
+       data = table.query(
+         IndexName=index_name,
+         KeyConditionExpression=Key('message_group_uuid').eq(group_uuid)
+       )
+       print("RESP ===>",data['Items'])
+       
+       # recreate the message group rows with new SK value
+       for i in data['Items']:
+         delete_item = table.delete_item(Key={'pk': i['pk'], 'sk': i['sk']})
+         print("DELETE ===>",delete_item)
+         
+         response = table.put_item(
+           Item={
+             'pk': i['pk'],
+             'sk': sk,
+             'message_group_uuid':i['message_group_uuid'],
+             'message':message,
+             'user_display_name': i['user_display_name'],
+             'user_handle': i['user_handle'],
+             'user_uuid': i['user_uuid']
+           }
+         )
+         print("CREATE ===>",response)
+   ```
+   1. add permission "AWSLambdaInvocation-DynamoDB" to the role created with the lambda (under Configuration tab) 
+5. Modify 'bin/ddb/schema-load' file by adding information regarding GSI
+   ```
+   AttributeDefinitions=[
+      {
+          'AttributeName': 'message_group_uuid',
+          'AttributeType': 'S'
+      },
+   ...
+   ...
+   ],
+   ...
+   GlobalSecondaryIndexes=[{
+      'IndexName': 'message-group-sk-index',
+      'KeySchema': [{
+          'AttributeName': 'message_group_uuid',
+          'KeyType': 'HASH'
+      },{
+          'AttributeName': 'sk',
+          'KeyType': 'RANGE'
+      }],
+      'Projection': {
+          'ProjectionType': 'ALL',
+      },
+      'OnDemandThroughput': {
+          'MaxReadRequestUnits': 123,
+          'MaxWriteRequestUnits': 123
+      }
+   }]
+   ```
+6. go on DynamoDB tables page, enter the table just created, enable streams (if not yet enabled) and create a trigger by choosing
+   the lambda function we created on point (4)
