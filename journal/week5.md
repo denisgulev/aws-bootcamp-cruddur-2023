@@ -556,3 +556,4 @@ for item in reversed_items:
 4. When we start docker compose with local PostgreSQL and DynamoDB, we need to seed data in both the databases, 
    ensuring the user_uuid's references in DynamoDB reflect the correct UUIDs from PostgreSQL database.
 5. Implemented "messages.py" in order to retrieve message of a specific message_group
+6. Inside "create_message.py" we added operations to create a new message inside a message_group and create a new message_group
