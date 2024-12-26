@@ -2,7 +2,7 @@ import './MessageForm.css';
 import React, { useState } from "react";
 import { useParams } from 'react-router-dom';
 
-export default function MessageForm({ setMessages }) {
+export default function MessageForm(props) {
   const [message, setMessage] = useState('');
   const [charCount, setCharCount] = useState(0);
   const params = useParams();
@@ -40,11 +40,16 @@ export default function MessageForm({ setMessages }) {
         body: JSON.stringify(json)
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const newMessage = await response.json();
-        setMessages((currentMessages) => [...currentMessages, newMessage]);
-        setMessage('');
-        setCharCount(0);
+        console.log('data:', data)
+        if (data.message_group_uuid) {
+          console.log('redirect to message group')
+          window.location.href = `/messages/${data.message_group_uuid}`
+        } else {
+          props.setMessages(current => [...current, data]);
+        }
       } else {
         console.error("Failed to send message", response);
       }

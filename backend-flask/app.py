@@ -3,6 +3,7 @@ from flask import request
 from flask_cors import CORS, cross_origin
 import os
 
+from services.users_short import *
 from services.home_activities import *
 from services.notification_activities import *
 from services.user_activities import *
@@ -154,8 +155,8 @@ def data_create_message():
   user_handle         = request.json.get('handle',None)
   message_group_uuid  = request.json.get('message_group_uuid',None)
   message             = request.json['message']
+  access_token        = CognitoToken.extract_access_token(request.headers)
 
-  access_token = CognitoToken.extract_access_token(request.headers)
   try:
     claims = cognito_token.verify(access_token)
     # authenticated request
@@ -253,6 +254,11 @@ def data_activities_reply(activity_uuid):
     return model['errors'], 422
   else:
     return model['data'], 200
+
+@app.route("/api/users/<string:handle>/short", methods=['GET'])
+def data_users_short(handle):
+  data = UsersShort.run(handle)
+  return data, 200
 
 if __name__ == "__main__":
   app.run(debug=True)
