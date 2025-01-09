@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM 923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-python:3.10-slim
 
 # set the execution starting point in the container
 WORKDIR /backend-flask
@@ -9,7 +9,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 
 EXPOSE ${port}
 # CMD is the command the container will run when it starts up

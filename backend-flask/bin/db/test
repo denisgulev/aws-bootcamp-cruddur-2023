@@ -3,7 +3,7 @@
 import psycopg
 import os
 
-connection_url = os.getenv("PROD_CONNECTION_URL")
+connection_url = os.getenv("CONNECTION_URL")
 print("connection_url:", connection_url)
 
 conn = None

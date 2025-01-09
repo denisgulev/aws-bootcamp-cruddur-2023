@@ -1,0 +1,21 @@
+#! /bin/bash
+
+if [ -z "$1" ]; then
+    echo "TaskID was not provided."
+    exit 1
+fi
+TASK_ID=$1
+
+if [ -z "$2" ]; then
+    echo "ContainerName was not provided."
+    exit 1
+fi
+CONTAINER_NAME=$2
+
+aws ecs execute-command  \
+         --region $AWS_DEFAULT_REGION \
+         --cluster cruddur \
+         --task $TASK_ID \
+         --container $CONTAINER_NAME \
+         --command "/bin/bash" \
+         --interactive
