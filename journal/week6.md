@@ -167,6 +167,44 @@ We need to define a health check for our RDS instance.
      docker push $ECR_BACKEND_FLASK_URL:latest
    ```
 
+
+### Repository for Frontend
+1. create the repository
+   ```sh
+      aws ecr create-repository \
+        --repository-name frontend-react-js \
+        --image-tag-mutability MUTABLE
+   ```
+2. login to ECR
+   ```sh
+      aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"    ```
+   ```
+3. set ECR URL
+   ```sh
+      export ECR_FRONTEND_REACT_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/frontend-react-js"
+      echo $ECR_FRONTEND_REACT_URL
+   ```
+4. Build Image
+   ```sh
+     docker build \
+      --build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-284804859.eu-south-1.elb.amazonaws.com:4567" \
+      --build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+      --build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+      --build-arg REACT_APP_AWS_USER_POOLS_ID="$AWS_USER_POOL_ID" \
+      --build-arg REACT_APP_CLIENT_ID="$AWS_USER_POOL_APP_CLIENT_ID" \
+      -t frontend-react-js \
+      -f Dockerfile.prod \
+      .
+   ```
+5. Tag Image
+   ```sh
+     docker tag frontend-react-js:latest $ECR_FRONTEND_REACT_URL:latest
+   ```
+6. Push Image
+   ```sh
+     docker push $ECR_FRONTEND_REACT_URL:latest
+   ```
+
 ## Run ECS Service
 In order to create an ECS service, we need to create a task definition and a service.
 
@@ -233,7 +271,7 @@ This is like a "Dockerfile", that specifies how to we provision our application.
          aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchFullAccess --role-name CruddurTaskRole
          aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess --role-name CruddurTaskRole
    ```
-4. Register Task Definition
+4. Register Task Definition -> 
    create backend-flask.json file
    ```json
       {
@@ -255,6 +293,16 @@ This is like a "Dockerfile", that specifies how to we provision our application.
                "name": "backend-flask",
                "image": "<ACCOUNT_ID>.dkr.ecr.eu-south-1.amazonaws.com/cruddur-flask:latest",
                "essential": true,
+               "healthCheck": {
+                 "command": [
+                   "CMD-SHELL",
+                   "python /backend-flask/bin/flask/health-check"
+                 ],
+                 "interval": 30,
+                 "timeout": 5,
+                 "retries": 3,
+                 "startPeriod": 60
+               },
                "portMappings": [
                   {
                      "name": "backend-flask",
@@ -289,14 +337,61 @@ This is like a "Dockerfile", that specifies how to we provision our application.
               ]
             }
          ]
-        }
+      }
    ```
-   register the task
+   create frontend-react.json file
+   ```json
+      {
+         "family": "frontend-react-js",
+         "executionRoleArn": "arn:aws:iam::923264624222:role/CruddurServiceExecutionRole",
+         "taskRoleArn": "arn:aws:iam::923264624222:role/CruddurTaskRole",
+         "networkMode": "awsvpc",
+         "cpu": "256",
+         "memory": "512",
+         "requiresCompatibilities": [
+            "FARGATE"
+         ],
+         "containerDefinitions": [
+            {
+               "name": "frontend-react-js",
+               "image": "923264624222.dkr.ecr.eu-south-1.amazonaws.com/frontend-react-js",
+               "essential": true,
+               "healthCheck": {
+                  "command": [
+                  "CMD-SHELL",
+                  "curl -f http://localhost:3000 || exit 1"
+                  ],
+                  "interval": 30,
+                  "timeout": 5,
+                  "retries": 3
+               },
+               "portMappings": [
+                  {
+                  "name": "frontend-react-js",
+                  "containerPort": 3000,
+                  "protocol": "tcp",
+                  "appProtocol": "http"
+                  }
+               ],
+               "logConfiguration": {
+                 "logDriver": "awslogs",
+                 "options": {
+                   "awslogs-group": "cruddur",
+                   "awslogs-region": "eu-south-1",
+                   "awslogs-stream-prefix": "frontend-react-js"
+                 }
+               }
+            }
+         ]
+      }
+   ```
+5. register the task
    ```sh
       aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json
+      aws ecs register-task-definition --cli-input-json file://aws/task-definitions/frontend-react-js.json
    ```
    
-5. Create Security Group
+6. Create Security Group
    ```sh
       export CRUD_SERVICE_SG=$(aws ec2 create-security-group \
          --group-name "crud-srv-sg" \
@@ -311,11 +406,12 @@ This is like a "Dockerfile", that specifies how to we provision our application.
          --port 80 \
          --cidr 0.0.0.0/0
    ```
-6. Create ECS Service
+7. Create ECS Services
     ```sh
         aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+        aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json
     ```
-7. Install the session-manager to access the container from your PC
+8. Install the session-manager to access the container from your PC
    - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
    - Verify its working
    ```sh
@@ -331,13 +427,13 @@ This is like a "Dockerfile", that specifies how to we provision our application.
          --command "/bin/bash" \
          --interactive
    ```
-8. edit inbound rules of RDS's security group to allow traffic from the ECS security group
+9. edit inbound rules of RDS's security group to allow traffic from the ECS security group
    - go to EC2
    - enter "security groups"
    - select the RDS security group
    - edit inbound rules
    - add a new rule -> select as source the ECS security group of ECS and give it a description for future identification
-9. connect to the container and test the connection, using (./bin/deb/test)
+10. connect to the container and test the connection, using (./bin/deb/test)
 
 ## Create and ALB (Application Load Balancer)
 1. navigate to EC2 -> Load Balancers
@@ -354,5 +450,13 @@ This is like a "Dockerfile", that specifies how to we provision our application.
 
 8. modify "service-backend-flask.json" by adding the field "loadBalancers"
 9. run the "create-service" command again
-10. once the service is up and healthy, we can access the application from the LoadBalancer DNS Name
+10. once the service is up and healthy, we can access the application from the LoadBalancer DNS Name and NOT through task IP anymore
 11. we can setup access-logs for the ALB inside the "Attributes" tab
+
+## Prepare the Frontend for production
+
+1. define a nginx.conf file to be used as reverse-proxy
+2. define a Dockerfile for production build
+3. follow steps under "Repository for Frontend"
+4. register the task definition for the frontend
+5. execute "create-service" command for the frontend
