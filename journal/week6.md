@@ -460,3 +460,7 @@ This is like a "Dockerfile", that specifies how to we provision our application.
 3. follow steps under "Repository for Frontend"
 4. register the task definition for the frontend
 5. execute "create-service" command for the frontend
+
+## Security Groups Adjustments
+
+On the security-group connected with services, we should create inbound rules both for port 3000 and port 4567 and allowing traffic coming from the ALB.
