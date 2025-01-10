@@ -338,3 +338,21 @@ This is like a "Dockerfile", that specifies how to we provision our application.
    - edit inbound rules
    - add a new rule -> select as source the ECS security group of ECS and give it a description for future identification
 9. connect to the container and test the connection, using (./bin/deb/test)
+
+## Create and ALB (Application Load Balancer)
+1. navigate to EC2 -> Load Balancers
+2. create a new ALB
+3. create a new security group -> set inbound rules for HTTP and HTTPS from anywhere
+4. edit "crud-srv-sg" security-groups to allow access ONLY through the load-balancer
+5. use the newly created SG in the ALB
+6. create a new target group
+   - target type -> "IP Addresses"
+   - port -> port of the service the load-balancer will route traffic to
+7. create another target group for the FE
+
+--> Once the ALB is created, we MUST adjust the creation of the service to use the ALB as a load balancer.
+
+8. modify "service-backend-flask.json" by adding the field "loadBalancers"
+9. run the "create-service" command again
+10. once the service is up and healthy, we can access the application from the LoadBalancer DNS Name
+11. we can setup access-logs for the ALB inside the "Attributes" tab
