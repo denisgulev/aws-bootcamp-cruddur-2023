@@ -147,7 +147,7 @@ We need to define a health check for our RDS instance.
    ```
 2. login to ECR
    ```sh
-      aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"    ```
+      aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
    ```
 3. set ECR URL
    ```sh
@@ -156,7 +156,7 @@ We need to define a health check for our RDS instance.
    ```
 4. Build Image
    ```sh
-     docker build -t backend-flask .
+     docker build -f Dockerfile.prod -t backend-flask .
    ```
 5. Tag Image
    ```sh
