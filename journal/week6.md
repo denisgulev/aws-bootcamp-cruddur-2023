@@ -156,11 +156,11 @@ We need to define a health check for our RDS instance.
    ```
 4. Build Image
    ```sh
-     docker build -f Dockerfile.prod -t backend-flask .
+     docker build -f Dockerfile.prod -t backend-flask-prod .
    ```
 5. Tag Image
    ```sh
-     docker tag backend-flask:latest $ECR_BACKEND_FLASK_URL:latest
+     docker tag backend-flask-prod:latest $ECR_BACKEND_FLASK_URL:latest
    ```
 6. Push Image
    ```sh
