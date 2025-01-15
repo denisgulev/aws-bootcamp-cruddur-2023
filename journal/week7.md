@@ -60,9 +60,9 @@ Next
     2. 443 -> forward -> target group (frontend), MUST select the certificate created in ACM
     3. on the second listener we add a rule to forward traffic to the target group, on the condition that the host is the domain name (api.example.com) we want to use
 10. navigate to Route53 and create
-    1. a new record that will route traffic to the ALB, for a naked domain
+    1. a new record that will route traffic to the ALB, for a subdomain (app.example.com)
     2. a new record that will route traffic to the ALB, for a subdomain (api.example.com)
-       (this will ensure that when we navigate to "https://example.com" we will be redirected to the frontend targetgroup &&
+       (this will ensure that when we navigate to "https://app.example.com" we will be redirected to the frontend targetgroup &&
        when we navigate to "https://api.example.com" we will be redirected to the backend targetgroup) --> as per the rules we set on the ALB
 
 -> Update task-definition for the backend by specifying the environment variables "FRONTEND_URL" and "BACKEND_URL" to be the domain name we want to use with "https" protocol

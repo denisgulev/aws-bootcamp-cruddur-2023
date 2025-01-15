@@ -209,7 +209,7 @@ We need to define a health check for our RDS instance.
 In order to create an ECS service, we need to create a task definition and a service.
 
 ### Task Definition
-This is like a "Dockerfile", that specifies how to we provision our application.
+This is like a "Dockerfile", that specifies how to provision our application.
 
 1. Create Systems Manager -> Parameter Store -> Parameters
     ```sh
