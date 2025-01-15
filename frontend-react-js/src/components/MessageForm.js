@@ -1,6 +1,7 @@
 import './MessageForm.css';
 import React, { useState } from "react";
 import { useParams } from 'react-router-dom';
+import { setAccessToken } from '../hooks/useAuth';
 
 export default function MessageForm(props) {
   const [message, setMessage] = useState('');
@@ -30,10 +31,14 @@ export default function MessageForm(props) {
       } else {
         json.message_group_uuid = params.message_group_uuid
       }
+
+      await setAccessToken();
+      const access_token = localStorage.getItem('access_token')
+
       const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Authorization': `Bearer ${access_token}`,
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },

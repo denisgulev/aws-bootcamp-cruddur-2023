@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { setAccessToken } from '../hooks/useAuth';
 
 export function useHomeFeed() {
   const [activities, setActivities] = useState([]);
@@ -9,10 +10,13 @@ export function useHomeFeed() {
 
   const loadData = async () => {
     try {
+      await setAccessToken();
+      const access_token = localStorage.getItem('access_token')
+
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`;
       const response = await fetch(backend_url, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          Authorization: `Bearer ${access_token}`,
         },
         method: "GET"
       });

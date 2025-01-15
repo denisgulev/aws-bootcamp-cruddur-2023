@@ -87,3 +87,44 @@ NEXT
 2. navigate to ECS
 3. update "backend" service to use the new task definition
 4. update "frontend" service to use the latest pushed image
+
+## Refresh Cognito Token
+
+Update the "useAuth" function in the frontend app in order to allow for token refresh
+
+```js
+  import { useState, useEffect } from "react";
+  import { fetchUserAttributes, fetchAuthSession } from "aws-amplify/auth";
+
+  export async function setAccessToken() {
+    const session = await fetchAuthSession({ forceRefresh: true });
+    const { accessToken } = session.tokens ?? {};
+    localStorage.setItem('access_token', accessToken);
+  }
+
+  export function useAuth() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+      const checkAuth = async () => {
+        try {
+          const attributes = await fetchUserAttributes();
+          await setAccessToken();
+
+          setUser({
+            display_name: attributes.name,
+            handle: attributes.preferred_username,
+          });
+        } catch (err) {
+          console.error("Error fetching user attributes:", err);
+        }
+      };
+
+      checkAuth();
+    }, []);
+
+    return { user };
+  }
+```
+
+Also, call "setAccessToken()" everywhere we are using the token to make autheticated requests towards the BE.
