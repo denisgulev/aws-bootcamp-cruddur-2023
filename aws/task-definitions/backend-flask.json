@@ -14,6 +14,19 @@
   },
   "containerDefinitions": [
     {
+      "name": "xray",
+      "image": "public.ecr.aws/xray/aws-xray-daemon",
+      "essential": true,
+      "user": "1337",
+      "portMappings": [
+        {
+          "name": "xray",
+          "containerPort": 2000,
+          "protocol": "udp"
+        }
+      ]
+    },
+    {
       "name": "backend-flask",
       "image": "923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-flask:latest",
       "essential": true,

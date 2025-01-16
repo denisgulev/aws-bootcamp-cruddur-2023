@@ -128,3 +128,44 @@ Update the "useAuth" function in the frontend app in order to allow for token re
 ```
 
 Also, call "setAccessToken()" everywhere we are using the token to make autheticated requests towards the BE.
+
+## Fargate 
+
+When deploying services using Fargate, we should size the CPU and Memory according to the CPU cycles we are using.
+Fargate uses the shared responsibility model, where AWS is responsible for the underlying infrastructure (EC2s and their updates/patching) and we are responsible for the security of the application.
+
+Service connect is an evolution of AppMesh and CloudMap to handle service discovery and routing.
+
+Container insights are useful for monitoring the containers and the services running on ECS, it allows to track the communication 
+between services and helps to identify bottlenecks.
+
+## Fargate Container Insights
+
+1. edit "aws/task-definitions/backend-flask.json" file, by adding ContainerDefinition for XRay
+   ```json
+      {
+         "name": "xray",
+         "image": "public.ecr.aws/xray/aws-xray-daemon",
+         "essential": true,
+         "user": "1337",
+         "portMappings": [
+          {
+             "name": "xray",
+             "containerPort": 2000,
+             "protocol": "udp"
+          }
+         ],
+         "healthCheck": {
+             "command": [
+                 "CMD-SHELL",
+                 "pgrep xray || exit 1"
+             ],
+             "interval": 30,
+             "timeout": 5,
+             "retries": 3,
+             "startPeriod": 60
+         }
+      }
+   ```
+2. update the task definition for the backend -> run ```./bin/ecs/register-backend-task``` followed by ```./bin/ecs/force-deploy-backend-flask```
+3. wait for the task to run and in the AWS Console -> ECS -> Tasks -> (last run backend task) -> we should see 3 containers (xray, serviceConnect, backend-flask)
