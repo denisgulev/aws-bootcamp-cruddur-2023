@@ -169,3 +169,4 @@ between services and helps to identify bottlenecks.
    ```
 2. update the task definition for the backend -> run ```./bin/ecs/register-backend-task``` followed by ```./bin/ecs/force-deploy-backend-flask```
 3. wait for the task to run and in the AWS Console -> ECS -> Tasks -> (last run backend task) -> we should see 3 containers (xray, serviceConnect, backend-flask)
+4. repeat step 1 to 3 for "aws/task-definitions/frontend-react-js.json"
