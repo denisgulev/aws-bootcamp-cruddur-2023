@@ -1,0 +1,4 @@
+#! /bin/bash
+
+aws s3 rm "s3://uploads.app.denisgulev.com/"
+aws s3 rm "s3://assets.app.denisgulev.com/avatars/"

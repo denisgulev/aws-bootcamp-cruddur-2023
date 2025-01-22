@@ -281,3 +281,39 @@ createPolicySnSPublish(topicArn: string) {
 3. execute ```cdk synth``` to catch any errors before deploying
 4. execute ```cdk deploy``` to provision on CloudFormation
 
+
+## Cloud Front
+
+In order to serve the images from the S3 bucket, we can use CloudFront to cache the images and serve them faster.
+
+Setup CloudFront:
+1. Navigate to CloudFront and click "create distribution"
+2. Choose an origin domain name (S3 bucket)
+3. Name -> leave as default (auto populated)
+4. Origin Access -> Origin Access Control Settings -> create a new OAC and select it from the dropdown menu
+5. Viewer protocol policy -> "Redirect HTTP to HTTPS"
+6. Cache key and origin requests -> Cache policy and origin request policy (recommended)
+   1. Cache policy -> Caching Optimized
+   2. Origin request policy -> CORS-S3Origin
+7. Response headers policy -> SimpleCORS
+8. Alternate domain name -> set as desired
+9. Custom SSL certificate -> create a cert in the specified region and select it from the dropdown
+10. click "create distribution"
+11. as last step we should update the bucket policy as prompted by CloudFront
+12. finally, we can access the images of the bucket by using the following url:
+   ```
+   https://<cloudfront-domain-name>/<bucket-object-path>
+   ```
+
+
+#### Make some changes to the buckets 
+
+Instead of having 1 bucket with 2 folders (input and output), 
+we can create 2 buckets, one for input (where user uploads images) 
+and one for output (where cloud-front serves images from). 
+This way we can have different policies for each bucket.
+
+So the flow becomes:
+1. user uploads an image on the input bucket
+2. the lambda gets triggered and process the image, by resizing it and converting it to PNG, then uploads it to the output bucket
+3. Cloud Front is set to serve the images from the output bucket
