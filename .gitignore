@@ -3,3 +3,4 @@
 /aws/lambdas-with-external-deps/psycopg2/
 /aws/lambdas-with-external-deps/psycopg2_binary.libs/
 /aws/lambdas-with-external-deps/aws-pg2.zip
+/aws/lambda/process-images/node_modules/
