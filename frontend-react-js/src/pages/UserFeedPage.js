@@ -6,6 +6,7 @@ import DesktopSidebar from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
 import { useAuth, setAccessToken } from '../hooks/useAuth'; // Import the useAuth hook
+import ProfileForm from '../components/ProfileForm';
 
 export default function UserFeedPage() {
   const [profile, setProfile] = useState([]);
@@ -53,11 +54,18 @@ export default function UserFeedPage() {
       <DesktopNavigation user={user} active={'profile'} setPopped={setPopped} />
       <div className='content'>
         <ActivityForm popped={popped} setActivities={setActivities} />
+        <ProfileForm
+          profile={profile}
+          setProfile={setProfile}
+          popped={poppedProfile}
+          setPopped={setPoppedProfile}
+        />
         <ActivityFeed
           profilePage={profile != null}
           setPopped={setPoppedProfile}
           title={profile.display_name}
           handle={profile.handle}
+          bio={profile.bio}
           activities={activities}
         />
       </div>

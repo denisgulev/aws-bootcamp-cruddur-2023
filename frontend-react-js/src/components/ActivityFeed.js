@@ -2,7 +2,7 @@ import './ActivityFeed.css';
 import ActivityItem from './ActivityItem';
 import EditProfileButton from './EditProfileButton';
 
-export default function ActivityFeed({ profilePage, title, handle, activities, setReplyActivity, setPopped, setPoppedProfile }) {
+export default function ActivityFeed({ profilePage, title, handle, bio, activities, setReplyActivity, setPopped }) {
   return (
     <div className="activity_feed">
       <div className="activity_feed_heading">
@@ -10,6 +10,9 @@ export default function ActivityFeed({ profilePage, title, handle, activities, s
           profilePage &&
           <div className="profile-container">
             <div>
+              <div className="cruds_count">
+                {activities.length} CRUDs
+              </div>
               <div className="avatar">
                 <img src="https://assets.app.denisgulev.com/avatars/avatar1.png" />
               </div>
@@ -21,11 +24,11 @@ export default function ActivityFeed({ profilePage, title, handle, activities, s
                   @{handle}
                 </div>
               </div>
-              <div className="cruds_count">
-                {activities.length} CRUDs
+              <div className="bio">
+                {bio}
               </div>
             </div>
-            <EditProfileButton setPopped={setPoppedProfile} />
+            <EditProfileButton setPopped={setPopped} />
           </div>
         }
         {

@@ -7,6 +7,12 @@ export async function setAccessToken() {
   localStorage.setItem('access_token', accessToken);
 }
 
+export async function getAccessToken() {
+  const session = await fetchAuthSession({ forceRefresh: true });
+  const { accessToken } = session.tokens ?? {};
+  return accessToken;
+}
+
 export function useAuth() {
   const [user, setUser] = useState(null);
 

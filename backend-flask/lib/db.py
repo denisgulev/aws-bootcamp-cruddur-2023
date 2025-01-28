@@ -49,8 +49,8 @@ class Db:
         no_color = '\033[0m'
         logger.info(f'{blue} SQL Params:{no_color}')
         for key, value in params.items():
-            logger.info("key:", key)
-            logger.info("value:", value)
+            logger.info(f"key: {key}")
+            logger.info(f"value: {value}")
 
     # when you want to commit data to the database, returning the uuid
     def query_commit_with_returning_id(self, sql, params=None):
