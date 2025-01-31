@@ -33,6 +33,7 @@ export default function UserFeedPage() {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log("profile --> ", data.profile)
         setProfile(data.profile);
         setActivities(data.activities);
       } else {
@@ -66,6 +67,7 @@ export default function UserFeedPage() {
           title={profile.display_name}
           handle={profile.handle}
           bio={profile.bio}
+          cognito_user_uuid={profile.cognito_user_uuid}
           activities={activities}
         />
       </div>

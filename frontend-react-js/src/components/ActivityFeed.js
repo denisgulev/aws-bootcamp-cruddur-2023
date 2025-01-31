@@ -1,8 +1,10 @@
 import './ActivityFeed.css';
 import ActivityItem from './ActivityItem';
 import EditProfileButton from './EditProfileButton';
+import ProfileAvatar from './ProfileAvatar';
 
-export default function ActivityFeed({ profilePage, title, handle, bio, activities, setReplyActivity, setPopped }) {
+export default function ActivityFeed({ profilePage, title, handle, bio, cognito_user_uuid, activities, setReplyActivity, setPopped }) {
+  console.log("user uuid in ACTIVITY FEED --> ", cognito_user_uuid)
   return (
     <div className="activity_feed">
       <div className="activity_feed_heading">
@@ -13,10 +15,8 @@ export default function ActivityFeed({ profilePage, title, handle, bio, activiti
               <div className="cruds_count">
                 {activities.length} CRUDs
               </div>
-              <div className="avatar">
-                <img src="https://assets.app.denisgulev.com/avatars/avatar1.png" />
-              </div>
-              <div className="info">
+              <ProfileAvatar cognito_user_uuid={cognito_user_uuid} />
+              <div>
                 <div className="title">
                   {title}
                 </div>

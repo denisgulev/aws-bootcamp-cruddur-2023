@@ -2,6 +2,7 @@ import './ProfileInfo.css';
 import { ReactComponent as ElipsesIcon } from './svg/elipses.svg';
 import React, { useState } from 'react';
 import { signOut } from 'aws-amplify/auth';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function ProfileInfo({ user }) {
   const [isPopped, setIsPopped] = useState(false);
@@ -28,7 +29,7 @@ export default function ProfileInfo({ user }) {
         </div>
       )}
       <div className="profile-info" onClick={togglePopup}>
-        <div className="profile-avatar"></div>
+        <ProfileAvatar cognito_user_uuid={user.cognito_user_uuid} />
         <div className="profile-desc">
           <div className="profile-display-name">{user?.display_name || 'My Name'}</div>
           <div className="profile-username">@{user?.handle || 'handle'}</div>

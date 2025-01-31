@@ -1,4 +1,4 @@
-INSERT INTO public.users (email, display_name, handle, cognito_user_id, bio)
+INSERT INTO public.users (email, display_name, handle, cognito_user_uuid, bio)
 VALUES
     ('denis.gulev@gmail.com', 'Denis Gulev', 'denis' ,'MOCK', ''),
     ('bob@example.co', 'Bob', 'bob' ,'MOCK', ''),
