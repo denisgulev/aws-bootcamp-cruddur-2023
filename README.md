@@ -26,7 +26,7 @@ The `/journal` directory contains
 - [X] [Week 5](journal/week5.md) DynamoDB
 - [X] [Week 6](journal/week6.md) Deploying Containers to ECS
 - [X] [Week 7](journal/week7.md) Solving CORS with a Load Balancer and Custom Domain
-- [ ] [Week 8](journal/week8.md)
+- [X] [Week 8](journal/week8.md) Image Upload to S3, API Gateway, Lambda functions (process/upload image, authorize user), AWS CDK
 - [ ] [Week 9](journal/week9.md)
 - [ ] [Week 10](journal/week10.md)
 - [ ] [Week 11](journal/week11.md)
