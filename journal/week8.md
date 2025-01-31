@@ -317,3 +317,141 @@ So the flow becomes:
 1. user uploads an image on the input bucket
 2. the lambda gets triggered and process the image, by resizing it and converting it to PNG, then uploads it to the output bucket
 3. Cloud Front is set to serve the images from the output bucket
+
+
+## Upload images to S3
+
+To upload images to S3 we will make use of signed URLs.
+
+1. **Create a Lambda function that generates a signed URL**
+   1. name -> "CruddurAvatarUpload"
+   2. runtime -> Ruby 3.3
+   3. architecture -> x86_64
+   4. execution role -> create a new role 
+2. **Inside our code create the file that will handle the image upload**
+   1. inside aws/lambda create a new folder ('cruddur-avatar-upload')
+   2. create "UPLOADS_BUCKET_NAME" in the env variables
+   3. create 'function.rb' file
+      ```rb
+      require 'aws-sdk-s3'
+      require 'json'
+      require 'jwt'
+      
+      def handler(event:, context:)
+      # return cors headers for preflight check
+      if event['routeKey'] == "OPTIONS /{proxy+}"
+      puts({step: 'preflight', message: 'preflight CORS check'}.to_json)
+      {
+      headers: {
+      "Access-Control-Allow-Headers": "*, Authorization",
+      "Access-Control-Allow-Origin": ENV['FRONTEND_URL'],
+      "Access-Control-Allow-Methods": "OPTIONS,GET,POST"
+      },
+      statusCode: 200
+      }
+      else
+      if event['headers'].nil? || event['headers']['authorization'].nil?
+      puts 'Authorization header missing!'
+      return {
+      statusCode: 401,
+      body: { error: "Missing Authorization header" }.to_json
+      }
+      end
+      token = event['headers']['authorization'].split(' ')[1]
+      puts({step: 'presignedurl', access_token: token}.to_json)
+      
+          body_hash = JSON.parse(event["body"])
+          extension = body_hash["extension"]
+      
+          decoded_token = JWT.decode(token, nil, false)
+          cognito_user_uuid = decoded_token[0]['sub']
+      
+          s3 = Aws::S3::Resource.new
+          bucket_name = ENV["UPLOADS_BUCKET_NAME"]
+          object_key = "#{cognito_user_uuid}.#{extension}"
+      
+          puts({object_key: object_key}.to_json)
+      
+          obj = s3.bucket(bucket_name).object(object_key)
+          url = obj.presigned_url(:put, expires_in: 60 * 5)
+      
+          puts({pre_signed_url: url}.to_json)
+          {
+              headers: {
+                  'Access-Control-Allow-Headers': '*, Authorization',
+                  'Access-Control-Allow-Origin': ENV['FRONTEND_URL'],
+                  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+              },
+              statusCode: 200,
+              body: {url: url}.to_json
+          }
+      end
+      end
+      ```
+   4. run ```bundle init``` to create a Gemfile
+   5. run ```bundle config set --local path 'vendor/bundle' && bundle install``` to install the required gems
+   6. zip the content of the folder "cruddur-avatar-upload" and upload it to the lambda function "CruddurAvatarUpload" ```zip -r cruddur-avatar-upload.zip function.rb vendor```
+   7. set "FRONTEND_URL" and "UPLOADS_BUCKET_NAME" in the lambda env variables
+   8. modify lambda execution role permissions using the policy on path "aws/lambda/policies/s3-upload-avatar-pre-sign-url-policy.json"
+3. **Create a new Lambda for Authorizer**
+   1. create "lambda-authorizer" folder under "aws/lambda"
+   2. create index.js file with the following content
+      ```js
+         "use strict";
+
+         const { CognitoJwtVerifier } = require("aws-jwt-verify");
+         
+         const jwtVerifier = CognitoJwtVerifier.create({
+         userPoolId: process.env.USER_POOL_ID,
+         tokenUse: "access",
+         clientId: process.env.CLIENT_ID
+         });
+         
+         exports.handler = async (event) => {
+         console.log("request:", JSON.stringify(event, undefined, 2));
+         
+             const jwt = event.headers.authorization;
+             try {
+                 const payload = await jwtVerifier.verify(jwt);
+                 console.log("Access allowed. JWT payload:", payload);
+             } catch (err) {
+                 console.error("Access forbidden:", err);
+                 return {
+                     isAuthorized: false,
+                 };
+             }
+             return {
+                 isAuthorized: true,
+             };
+         };
+      ```
+   3. run ```npm i aws-jwt-verify --save``` to create a package.json file
+   4. zip the content of the folder "lambda-authorizer" and upload it to the lambda function "cruddurApiGatewayLambdaAuthorizer" ```zip -r lambda-authorizer.zip .```
+4. **Create APIGateway**
+   1. create a new API
+   2. for integration choose the "CruddurAvatarUpload" lambda
+   3. change the resource path to "/avatar/get_upload" and the method to "POST"
+   4. once the API is created, go to the "Authorization" page, on the left side, and create a new authorizer of type lambda
+   5. select the "cruddurApiGatewayLambdaAuthorizer" lambda function created previously
+   6. once the authorizer is created, go back to the "Routes" page, select the "POST" route and attach the authorizer
+   7. create a new route -> "/{proxy+}" (OPTIONS) and attach the integration previously created
+   8. go to CORS and setup as follows: 
+      1. "Access-Control-Allow-Origin" -> "*" (temporary, in the future it should use the frontend URL)
+      2. "Access-Control-Allow-Headers" -> "content-type, authorization"
+      3. "Access-Control-Allow-Methods" -> "OPTIONS,POST"
+5. **Add a Cross-Origin Resource Sharing to "uploads" bucket**
+   ```json
+   [
+      {
+         "AllowedHeaders": ["*"],
+         "AllowedMethods": ["PUT"],
+         "AllowedOrigins": ["*"],
+         "ExposeHeaders": [
+         "x-amx-server-side-encryption",
+         "x-amz-request-id",
+         "x-amz-id-2"
+         ],
+         "MaxAgeSeconds": 30000
+      }
+   ]
+   ```

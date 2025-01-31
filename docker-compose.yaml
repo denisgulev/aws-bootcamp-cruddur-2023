@@ -1,9 +1,9 @@
 services:
   backend-flask:
     environment:
-      CONNECTION_URL: "${PROD_CONNECTION_URL}"
+      CONNECTION_URL: "${CONNECTION_URL}"
       # below is CONNECTION_URL for local db
-#      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
+      # CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
       FRONTEND_URL: "http://localhost:3000"
       BACKEND_URL: "http://localhost:4567"
       OTEL_SERVICE_NAME: "backend-flask"
@@ -28,12 +28,14 @@ services:
   frontend-react-js:
     environment:
       REACT_APP_BACKEND_URL: "http://localhost:4567"
+      REACT_APP_FRONTEND_URL: "http://localhost:3000"
       OTEL_SERVICE_NAME: "frontend-react-js"
       OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
       OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
       OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
       REACT_APP_AWS_USER_POOLS_ID: "${AWS_USER_POOL_ID}"
       REACT_APP_CLIENT_ID: "${AWS_USER_POOL_APP_CLIENT_ID}"
+      REACT_APP_API_GATEWAY_ENDPOINT_URL: "${API_GATEWAY_ENDPOINT_URL}"
     build: ./frontend-react-js
     ports:
       - "3000:3000"
@@ -41,20 +43,20 @@ services:
       - ./frontend-react-js:/frontend-react-js
     networks:
       - internal-network
-#  dynamodb-local:
-#    # https://stackoverflow.com/questions/67533058/persist-local-dynamodb-data-in-volumes-lack-permission-unable-to-open-databa
-#    # We needed to add user:root to get this working.
-#    user: root
-#    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-#    image: "amazon/dynamodb-local:latest"
-#    container_name: dynamodb-local
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - "./docker/dynamodb:/home/dynamodblocal/data"
-#    working_dir: /home/dynamodblocal
-#    networks:
-#      - internal-network
+  #  dynamodb-local:
+  #    # https://stackoverflow.com/questions/67533058/persist-local-dynamodb-data-in-volumes-lack-permission-unable-to-open-databa
+  #    # We needed to add user:root to get this working.
+  #    user: root
+  #    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+  #    image: "amazon/dynamodb-local:latest"
+  #    container_name: dynamodb-local
+  #    ports:
+  #      - "8000:8000"
+  #    volumes:
+  #      - "./docker/dynamodb:/home/dynamodblocal/data"
+  #    working_dir: /home/dynamodblocal
+  #    networks:
+  #      - internal-network
   db:
     image: postgres:13-alpine
     restart: always
@@ -70,7 +72,7 @@ services:
 
 # the name flag is a hack to change the default prepend folder
 # name when outputting the image names
-networks: 
+networks:
   internal-network:
     driver: bridge
     name: cruddur

@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:logs:eu-south-1:923264624222:*",
+        "arn:aws:s3:::uploads.app.denisgulev.com/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:eu-south-1:923264624222:log-group:/aws/lambda/CruddurAvatarUpload:*"
+      ]
+    }
+  ]
+}

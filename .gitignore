@@ -4,3 +4,10 @@
 /aws/lambdas-with-external-deps/psycopg2_binary.libs/
 /aws/lambdas-with-external-deps/aws-pg2.zip
 /aws/lambda/process-images/node_modules/
+/aws/lambda/cruddur-upload-avatar/.bundle/
+/aws/lambda/cruddur-upload-avatar/vendor/
+/aws/lambda/lambda-authorizer/*.zip
+/aws/lambda/lambda-authorizer/node_modules/
+/aws/lambda/cruddur-upload-avatar/*.zip
+/aws/lambda/cruddur-upload-avatar/Gemfile.lock
+/aws/lambda/lambda-authorizer/package-lock.json
