@@ -26,7 +26,7 @@ env:
     AWS_ACCOUNT_ID: 923264624222
     AWS_DEFAULT_REGION: eu-south-1
     CONTAINER_NAME: backend-flask
-    IMAGE_URL: 923264624222.dkr.ecr.eu-south-1.amazonaws.com
+    IMAGE_URL: 923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-flask
     REPO_NAME: backend-flask:latest
 
 artifacts:
