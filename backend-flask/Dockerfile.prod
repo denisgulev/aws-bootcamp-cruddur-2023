@@ -1,5 +1,8 @@
 FROM --platform=linux/amd64 923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-python:3.10-slim
 
+# debug
+RUN echo "Hello, World!"
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
