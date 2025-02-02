@@ -21,4 +21,3 @@ To create a new Pipeline, follow these steps:
 13. click "Create pipeline"
 14. At first it will fail, because we haven't created the build stage yet
 15. click "Edit" and add a stage between "Source" and "Deploy"
-16. 
