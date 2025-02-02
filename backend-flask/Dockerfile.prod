@@ -1,16 +1,4 @@
-FROM --platform=linux/amd64 923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-python:3.10-slim
-
-# debug
-RUN echo "Hello, World!"
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    python3-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+FROM 923264624222.dkr.ecr.eu-south-1.amazonaws.com/cruddur-python:3.10-slim
 
 # set the execution starting point in the container
 WORKDIR /backend-flask
@@ -18,7 +6,7 @@ WORKDIR /backend-flask
 COPY requirements.txt requirements.txt
 # RUN is used to create a layer in the container
 # RUN pip3 install -r requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt --verbose
+RUN pip3 install -r requirements.txt
 
 COPY . .
 
