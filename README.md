@@ -1,5 +1,7 @@
 # FREE AWS Cloud Project Bootcamp
 
+![](https://codebuild.eu-south-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoieTBzM1hLNkFjZVp1VE9wMnh5SjA1ejd5aURxZlZvVy9mbnJKTFl0MWVsMGtSMXgzUXlXcU9HTnJqVGdmMTkyOUdjcWtXSWp0aStyVEM1T0JESkJyTElrPSIsIml2UGFyYW1ldGVyU3BlYyI6InJPb0RTQ0sxRTRiakZEekciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+
 - Application: Cruddur
 
 A micro-blogging platform with expiring posts offers a safer, more engaging user experience by reducing personal data exposure, 
