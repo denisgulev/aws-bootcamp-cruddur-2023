@@ -30,19 +30,6 @@ env:
     CONTAINER_NAME: backend-flask
     IMAGE_URL: 923264624222.dkr.ecr.eu-south-1.amazonaws.com
     REPO_NAME: backend-flask:latest
-  parameter-store:
-    AWS_ACCESS_KEY_ID: /cruddur/backend-flask/AWS_ACCESS_KEY_ID
-    AWS_COGNITO_USER_POOL_CLIENT_ID: 3njmudq5anl6q3maonbbt8f6uf
-    AWS_COGNITO_USER_POOL_ID: eu-south-1_0afCPtZ7H
-    AWS_DEFAULT_REGION: eu-south-1
-    AWS_SECRET_ACCESS_KEY: /cruddur/backend-flask/AWS_SECRET_ACCESS_KEY
-    BACKEND_URL: https://api.denisgulev.com
-    CONNECTION_URL: /cruddur/backend-flask/CONNECTION_URL
-    FRONTEND_URL: https://app.denisgulev.com
-    OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io
-    OTEL_EXPORTER_OTLP_HEADERS: /cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS
-    OTEL_SERVICE_NAME: backend-flask
-    ROLLBAR_ACCESS_TOKEN: /cruddur/backend-flask/ROLLBAR_ACCESS_TOKEN
 
 artifacts:
   files:
