@@ -26,4 +26,5 @@ To create a new Pipeline, follow these steps:
     2. choose the repository and branch
     3. make sure to check "Privileged - Enable this flag if you want to build Docker images or want your builds to get elevated privileges"
     4. make sure to NOT choose a VPC and subnets, otherwise it will not be able to communicate with github
-    4. create a "buildspec.yaml" file in the backend folder
+    5. create a "buildspec.yaml" file in the backend folder
+    6. attach "codebuild-to-ecr-policy.json" to codebuild role
