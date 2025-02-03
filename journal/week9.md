@@ -20,8 +20,7 @@ To create a new Pipeline, follow these steps:
     3. click "Next"
 13. click "Create pipeline"
 14. At first it will fail, because we haven't created the build stage yet
-15. click "Edit" and add a "Build" stage between "Source" and "Deploy"
-16. go and create a "CodeBuild" project
+15. go and create a "CodeBuild" project
     1. add a source from Github
     2. choose the repository and branch
     3. make sure to 
@@ -36,3 +35,8 @@ To create a new Pipeline, follow these steps:
     7. attach "codebuild-to-ecr-policy.json" to codebuild role
     8. **for MAC users** 
        1. the python:3.10-slim should use the architecture `linux/amd64` instead of `linux/arm64`
+16. **ONCE** CodeBuild is up and tested, move back to CodePipeline
+17. click "Edit" and add a "Build" stage between "Source" and "Deploy"
+18. choose to use the CobeBuild project created earlier
+19. set explicit "Output Artifacts" on the build stage
+20. use the same artifact as "Input Artifacts" for the deploy stage
