@@ -20,11 +20,23 @@ To create a new Pipeline, follow these steps:
     3. click "Next"
 13. click "Create pipeline"
 14. At first it will fail, because we haven't created the build stage yet
-15. click "Edit" and add a "Build" stage between "Source" and "Deploy"
-16. go and create a "CodeBuild" project
+15. go and create a "CodeBuild" project
     1. add a source from Github
     2. choose the repository and branch
-    3. make sure to check "Privileged - Enable this flag if you want to build Docker images or want your builds to get elevated privileges"
+    3. make sure to 
     4. make sure to NOT choose a VPC and subnets, otherwise it will not be able to communicate with github
-    5. create a "buildspec.yaml" file in the backend folder
-    6. attach "codebuild-to-ecr-policy.json" to codebuild role
+    5. in the environment section
+       1. check "Privileged - Enable this flag if you want to build Docker images or want your builds to get elevated privileges"
+       2. choose "Ubuntu" for OS (support for docker builds)
+       3. runtime -> standard
+       4. images -> latest available
+       5. compute -> minimum available
+    6. create a "buildspec.yaml" file in the backend folder
+    7. attach "codebuild-to-ecr-policy.json" to codebuild role
+    8. **for MAC users** 
+       1. the python:3.10-slim should use the architecture `linux/amd64` instead of `linux/arm64`
+16. **ONCE** CodeBuild is up and tested, move back to CodePipeline
+17. click "Edit" and add a "Build" stage between "Source" and "Deploy"
+18. choose to use the CobeBuild project created earlier
+19. set explicit "Output Artifacts" on the build stage
+20. use the same artifact as "Input Artifacts" for the deploy stage
