@@ -1,0 +1,175 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SubnetCIDRBlocks:
+    Description: "Comma-separated list of CIDR blocks for the subnets"
+    Type: CommaDelimitedList
+    Default: > 
+      10.0.0.0/22,
+      10.0.4.0/22,
+      10.0.8.0/22,
+      10.0.12.0/22,
+      10.0.16.0/22,
+      10.0.20.0/22
+  Az1:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: eu-south-1a
+  Az2:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: eu-south-1b
+  Az3:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: eu-south-1c
+
+# VPC
+# https://serverfault.com/questions/588904/aws-vpc-default-route-table-in-cloudformation
+Resources:
+  VPC:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: CruddurVPC
+  # Internet Gateway
+  IGW:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-internetgateway.html
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: CruddurIGW
+  AttachIGW:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-gateway-attachment.html
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+  # Route Tables
+  RouteTable:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-routetable.html
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: CruddurRT
+  # Routes
+  RouteToIGW:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route.html
+    Type: AWS::EC2::Route
+    DependsOn: AttachIGW
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+  # Subnets (a,b,c)
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html
+  SubnetPubA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [0, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az1
+      EnableDns64: false
+      MapPublicIpOnLaunch: true # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPubA
+  SubnetPubB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [1, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az2
+      EnableDns64: false
+      MapPublicIpOnLaunch: true # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPubB
+  SubnetPubC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [2, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az3
+      EnableDns64: false
+      MapPublicIpOnLaunch: true # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPubC
+  SubnetPrA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [3, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az1
+      EnableDns64: false
+      MapPublicIpOnLaunch: false # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPrA
+  SubnetPrB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [4, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az2
+      EnableDns64: false
+      MapPublicIpOnLaunch: false # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPrB
+  SubnetPrC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select [5, !Ref SubnetCIDRBlocks]
+      AssignIpv6AddressOnCreation: false
+      AvailabilityZone: !Ref Az3
+      EnableDns64: false
+      MapPublicIpOnLaunch: false # Required for public subnets
+      Tags:
+        - Key: Name
+          Value: CruddurSubnetPrC
+  SubnetPubARTAssociation:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnetroutetableassociation.html
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPubA
+      RouteTableId: !Ref RouteTable
+  SubnetPubBRTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPubB
+      RouteTableId: !Ref RouteTable
+  SubnetPubCRTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPubC
+      RouteTableId: !Ref RouteTable
+  SubnetPrARTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPrA
+      RouteTableId: !Ref RouteTable
+  SubnetPrBRTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPrB
+      RouteTableId: !Ref RouteTable
+  SubnetPrCRTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetPrC
+      RouteTableId: !Ref RouteTable
+
