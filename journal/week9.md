@@ -38,3 +38,14 @@ To create a new Pipeline, follow these steps:
 18. choose to use the CobeBuild project created earlier
 19. set explicit "Output Artifacts" on the build stage
 20. use the same artifact as "Input Artifacts" for the deploy stage
+
+## Security Best Practices
+
+- Make use each AWS service you want to use is available in your region
+- Restrict access to the account allowed to make changes to the pipeline
+- Provide specific roles for the pipeline
+
+from an application point of view:
+- IAM users and roles -> create these with "the least privilege" principle in mind
+- repository code should be trusted -> only certain events (ex commit on 'prod' branch) should trigger the pipeline
+- 
