@@ -14,7 +14,7 @@ Description: |
     - 3 Private Subnets numbered A to C
 
 Parameters:
-  SubnetCIDRBlocks:
+  SubnetCidrBlocks:
     Description: "Comma-separated list of CIDR blocks for the subnets"
     Type: CommaDelimitedList
     Default: > 
@@ -86,7 +86,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [0, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [0, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az1
       EnableDns64: false
@@ -98,7 +98,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [1, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [1, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az2
       EnableDns64: false
@@ -110,7 +110,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [2, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [2, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az3
       EnableDns64: false
@@ -122,7 +122,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [3, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [3, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az1
       EnableDns64: false
@@ -134,7 +134,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [4, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [4, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az2
       EnableDns64: false
@@ -146,7 +146,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Select [5, !Ref SubnetCIDRBlocks]
+      CidrBlock: !Select [5, !Ref SubnetCidrBlocks]
       AssignIpv6AddressOnCreation: false
       AvailabilityZone: !Ref Az3
       EnableDns64: false
@@ -199,26 +199,14 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}SubnetCidrBlocks"
   PublicSubnetIds:
-    Value: !Join
-      - ","
-      - - !Ref SubnetPubA
-        - !Ref SubnetPubB
-        - !Ref SubnetPubC
+    Value: !Join [",", [!Ref SubnetPubA, !Ref SubnetPubB, !Ref SubnetPubC]]
     Export:
       Name: !Sub "${AWS::StackName}PublicSubnetIds"
   PrivateSubnetIds:
-    Value: !Join
-      - ","
-      - - !Ref SubnetPrA
-        - !Ref SubnetPrB
-        - !Ref SubnetPrC
+    Value: !Join [",", [!Ref SubnetPrA, !Ref SubnetPrB, !Ref SubnetPrC]]
     Export:
       Name: !Sub "${AWS::StackName}PrivateSubnetIds"
   AvailabilityZones:
-    Value: !Join
-      - ","
-      - - !Ref Az1
-        - !Ref Az2
-        - !Ref Az3
+    Value: !Join [",", [!Ref Az1, !Ref Az2, !Ref Az3]]
     Export:
       Name: !Sub "${AWS::StackName}AvailabilityZones"

@@ -2,11 +2,20 @@
 
 set -e # stop execution if script fails
 
-CFN_PATH="/aws/cfn/networking/template.yaml"
+CFN_PATH="./aws/cfn/networking/template.yaml"
+CONFIG_PATH="./aws/cfn/networking/config.toml"
+
+cfn-lint $CFN_PATH
+
+BUCKET=$(cfn-toml key deploy.bucket -t $CONFIG_PATH)
+REGION=$(cfn-toml key deploy.region -t $CONFIG_PATH)
+STACK_NAME=$(cfn-toml key deploy.stack_name -t $CONFIG_PATH)
 
 aws cloudformation deploy \
-  --stack-name "Cruddur" \
-  --s3-bucket "cfn-artifacts-d" \
+  --region $REGION \
+  --stack-name $STACK_NAME \
+  --s3-bucket $BUCKET \
   --template-file $CFN_PATH \
   --no-execute-changeset \
+  --tags group=cruddur-networking \
   --capabilities CAPABILITY_NAMED_IAM
