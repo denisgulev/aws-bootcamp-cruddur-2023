@@ -46,3 +46,28 @@ We'll create multiple layers of CloudFormation templates, each containing specif
    see https://www.ruby-toolbox.com/projects/cfn-toml
 
 ![Cluster+Networking Layers](_docs/assets/Cluster-Networking-Layers.jpeg)
+
+3. Service ->
+   1. security groups should be setup as follows:
+      1. traffic arrives at ALBSecurityGroup on ports 80 and 443; ALBSecurityGroup must implement inbound rules to handle this traffic
+      2. one it arrives at ALB, the traffic is route on internal ports (3000 for FE, 4567 for BE)
+   2. define a SecurityGroup -> Allows inbound traffic from the ALB Security Group, restricting it to the specified container port.
+   3. define a Fargate Service -> 
+      1. Runs as an ECS-managed Fargate service. 
+      2. Uses an imported cluster reference. 
+      3. Registers with an ALB target group. 
+      4. Supports Service Connect for inter-service communication. 
+   4. define TaskDefinition -> 
+      1. Defines the execution role and task role.
+      2. Uses an awsvpc network mode for Fargate compatibility. 
+      3. Runs two containers:
+      4. X-Ray Daemon for distributed tracing. 
+      5. Backend Flask Application configured with health checks, logging, and environment variables. 
+      6. Secrets such as database connection URLs and API keys are retrieved from AWS SSM Parameter Store.
+   5. define IAM Roles ->
+      1. TaskRole:
+         - Assigned to the ECS task for service-specific permissions. 
+         - Allows SSM communication for remote session management.
+      2. ExecutionRole:
+         - Used by ECS to pull container images and retrieve secrets. 
+         - Grants permissions to interact with Amazon ECR, CloudWatch Logs, and SSM Parameter Store.
