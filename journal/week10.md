@@ -37,3 +37,12 @@ We'll create multiple layers of CloudFormation templates, each containing specif
       1. 3 for public subnet
       2. 3 for private subnet
    7. define SubnetRouteTableAssociation resources for each subnet
+
+![Networking Layer](_docs/assets/Networking-Layer.jpeg)
+
+
+2. Cluster -> all cluster level resources
+   1. we need to pass parameters for Certificates using "cfn-toml"
+   see https://www.ruby-toolbox.com/projects/cfn-toml
+
+![Cluster+Networking Layers](_docs/assets/Cluster-Networking-Layers.jpeg)
