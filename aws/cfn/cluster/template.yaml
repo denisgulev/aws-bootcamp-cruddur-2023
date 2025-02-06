@@ -51,7 +51,7 @@ Parameters:
     Default: 2
   FrontendHealthCheckInterval:
     Type: Number
-    Default: "15"
+    Default: 15
   FrontendHealthCheckPath:
     Type: String
     Default: "/"
@@ -66,17 +66,17 @@ Parameters:
     Default: 5
   FrontendHealthyThresholdCount:
     Type: Number
-    Default: "2"
+    Default: 2
   FrontendUnhealthyThresholdCount:
     Type: Number
-    Default: "2"
+    Default: 2
 
 Resources:
   FargateCluster:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-cluster.html
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Sub "${AWS::StackName}FargateCluster"
+      ClusterName: !Sub "${AWS::StackName}-Fargate"
       CapacityProviders:
         - FARGATE
       ClusterSettings:
@@ -91,34 +91,27 @@ Resources:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub "${AWS::StackName}LoadBalancer"
-      Type: application
+      Name: !Sub "${AWS::StackName}-LoadBalancer"
       IpAddressType: ipv4
       Scheme: internet-facing
       SecurityGroups:
         - !Ref LBSecurityGroup
       Subnets:
         !Split
-          - ","
-          - Fn::ImportValue:
-              !Sub "${NetworkingStack}PublicSubnetIds"
+        - ","
+        - Fn::ImportValue:
+            !Sub "${NetworkingStack}PublicSubnetIds"
       LoadBalancerAttributes:
-        # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattributes.html
-        - Key: routing.http2.enabled
-          Value: true
-        - Key: routing.http.preserve_host_header.enabled
-          Value: false
-        - Key: deletion_protection.enabled
-          Value: true
-        - Key: load_balancing.cross_zone.enabled
-          Value: true
-        - Key: access_logs.s3.enabled
-          Value: false
-  #          # In case logs are needed, uncomment the following lines
-  #        - Name: access_logs.s3.bucket
-  #          Value: !Ref AccessLogsBucket
-  #        - Name: access_logs.s3.prefix
-  #          Value: !Sub "${AWS::StackName}/"
+        - Key: 'routing.http2.enabled'
+          Value: 'true'
+        - Key: 'routing.http.preserve_host_header.enabled'
+          Value: 'true'
+        - Key: 'deletion_protection.enabled'
+          Value: 'true'
+        - Key: 'load_balancing.cross_zone.enabled'
+          Value: 'true'
+        - Key: 'access_logs.s3.enabled'
+          Value: 'false'
   HTTPSListener:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-listener.html#cfn-elasticloadbalancingv2-listener-certificates
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -161,10 +154,10 @@ Resources:
       ListenerArn: !Ref HTTPSListener
       Priority: 1
   LBSecurityGroup:
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-securitygroup.html#aws-resource-ec2-securitygroup--examples
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-securitygroup.html
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub "${AWS::StackName}LBSecurityGroup"
+      GroupName: !Sub "${AWS::StackName}-LBSecurityGroup"
       GroupDescription: Allow Ingress traffic from the internet
       VpcId:
         Fn::ImportValue:
@@ -192,9 +185,10 @@ Resources:
       HealthCheckTimeoutSeconds: !Ref BackendHealthCheckTimeoutSeconds
       HealthyThresholdCount: !Ref BackendHealthyThresholdCount
       IpAddressType: ipv4
+      TargetType: ip
       Matcher:
         HttpCode: 200
-      Name: !Sub "${AWS::StackName}BackendTG"
+      Name: !Sub "${AWS::StackName}-BackendTG"
       Port: !Ref BackendPort
       Protocol: HTTP
       ProtocolVersion: HTTP1
@@ -217,9 +211,10 @@ Resources:
       HealthCheckTimeoutSeconds: !Ref FrontendHealthCheckTimeoutSeconds
       HealthyThresholdCount: !Ref FrontendHealthyThresholdCount
       IpAddressType: ipv4
+      TargetType: ip
       Matcher:
         HttpCode: "200"
-      Name: !Sub "${AWS::StackName}FrontendTG"
+      Name: !Sub "${AWS::StackName}-FrontendTG"
       Port: !Ref FrontendPort
       Protocol: "HTTP"
       ProtocolVersion: "HTTP1"
@@ -231,4 +226,21 @@ Resources:
         Fn::ImportValue:
           !Sub "${NetworkingStack}VpcId"
 
-#Outputs:
+Outputs:
+  LBSecurityGroupId:
+    Value: !GetAtt LBSecurityGroup.GroupId
+    Export:
+      Name: !Sub "${AWS::StackName}-LBSecurityGroupId"
+  FrontendTGArn:
+    Value: !Ref FrontendTG
+    Export:
+      Name: !Sub "${AWS::StackName}-FrontendTGArn"
+  BackendTGArn:
+    Value: !Ref BackendTG
+    Export:
+      Name: !Sub "${AWS::StackName}-BackendTGArn"
+  FargateClusterName:
+    Description: "ECS Fargate Cluster Name"
+    Value: !Ref FargateCluster
+    Export:
+      Name: !Sub "${AWS::StackName}-FargateClusterName"
