@@ -1,0 +1,7 @@
+[deploy]
+bucket = 'cfn-artifacts-d'
+region = 'eu-south-1'
+stack_name = 'CrdCluster'
+
+[parameters]
+CertificateArn = 'arn:aws:acm:eu-south-1:923264624222:certificate/def8e237-9831-4f50-a6f5-d39f0ae53e3f'
