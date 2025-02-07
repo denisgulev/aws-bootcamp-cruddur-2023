@@ -44,6 +44,7 @@ We'll create multiple layers of CloudFormation templates, each containing specif
 2. Cluster -> all cluster level resources
    1. we need to pass parameters for Certificates using "cfn-toml"
    see https://www.ruby-toolbox.com/projects/cfn-toml
+   2. when the load balancer is up and running, we MUST go to Route 53 and select it to be used
 
 ![Cluster+Networking Layers](../_docs/assets/Cluster-Networking-Layers.jpeg)
 

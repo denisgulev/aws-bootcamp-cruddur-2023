@@ -25,6 +25,9 @@ Parameters:
   FrontendPort:
     Type: Number
     Default: 3000
+  ContainerPort:
+    Type: Number
+    Default: 4567
   BackendPort:
     Type: Number
     Default: 4567
@@ -157,7 +160,7 @@ Resources:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-securitygroup.html
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub "${AWS::StackName}-LBSecurityGroup"
+      GroupName: !Sub "${AWS::StackName}-LBSG"
       GroupDescription: Allow Ingress traffic from the internet
       VpcId:
         Fn::ImportValue:
@@ -173,6 +176,21 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
           Description: INTERNET HTTP
+  ServiceSecurityGroup:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-securitygroup.html
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Ingress traffic from the ALB
+      GroupName: !Sub "${AWS::StackName}-ServiceSG"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          SourceSecurityGroupId: !GetAtt LBSecurityGroup.GroupId
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          Description: INTERNET HTTP
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${NetworkingStack}VpcId"
   BackendTG:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -244,3 +262,7 @@ Outputs:
     Value: !Ref FargateCluster
     Export:
       Name: !Sub "${AWS::StackName}-FargateClusterName"
+  ServiceSecurityGroupId:
+    Value: !GetAtt ServiceSecurityGroup.GroupId
+    Export:
+      Name: !Sub "${AWS::StackName}-ServiceSGId"

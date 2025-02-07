@@ -72,30 +72,13 @@ Parameters:
 
 
 Resources:
-  ServiceSG:
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-securitygroup.html
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow Ingress traffic from the ALB
-      GroupName: !Sub "${AWS::StackName}-ServiceSG"
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          SourceSecurityGroupId:
-            Fn::ImportValue:
-              !Sub "${ClusterStack}LBSecurityGroupId"
-          FromPort: !Ref ContainerPort
-          ToPort: !Ref ContainerPort
-          Description: INTERNET HTTP
-      VpcId:
-        Fn::ImportValue:
-          !Sub "${NetworkingStack}VpcId"
   FargateService:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html
     Type: AWS::ECS::Service
     Properties:
       Cluster:
         Fn::ImportValue:
-          !Sub "${ClusterStack}FargateClusterName"
+          !Sub "${ClusterStack}-FargateClusterName"
       DeploymentController:
         Type: ECS
       DesiredCount: 1
@@ -106,20 +89,22 @@ Resources:
       LoadBalancers:
         - TargetGroupArn:
             Fn::ImportValue:
-              !Sub "${ClusterStack}BackendTGArn"
+              !Sub "${ClusterStack}-BackendTGArn"
           ContainerName: 'backend-flask'
           ContainerPort: !Ref ContainerPort
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - !GetAtt ServiceSG.GroupId
+            - Fn::ImportValue:
+                !Sub "${ClusterStack}-ServiceSGId"
           Subnets:
             Fn::Split:
               - ","
               - Fn::ImportValue:
                   !Sub "${NetworkingStack}PublicSubnetIds"
       PlatformVersion: LATEST
+
       PropagateTags: SERVICE
       ServiceConnectConfiguration:
         Enabled: true
