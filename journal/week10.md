@@ -72,3 +72,12 @@ We'll create multiple layers of CloudFormation templates, each containing specif
       2. ExecutionRole:
          - Used by ECS to pull container images and retrieve secrets. 
          - Grants permissions to interact with Amazon ECR, CloudWatch Logs, and SSM Parameter Store.
+
+4. PostgreSQL DB
+   1. **RDS Instance**: A managed PostgreSQL database with configurable parameters such as instance type, backup retention, and deletion protection.
+   2. **Database Security Group**: A security group allowing secure access to the database from the application services.
+   3. **DB Subnet Group**: Defines subnets for RDS deployment, ensuring proper networking configuration.
+   
+   ** Notes: 
+   1. when the stack is deployed, we need to go to AWS Systems Manager -> Parameter Store and change the value for the connection string.
+   2. "MasterUserPassword" is passed through the command line, see "backend-flask/bin/cfn/db-deploy" script
