@@ -38,7 +38,7 @@ We'll create multiple layers of CloudFormation templates, each containing specif
       2. 3 for private subnet
    7. define SubnetRouteTableAssociation resources for each subnet
 
-![Networking Layer](../_docs/assets/Networking-Layer.jpeg)
+![Networking Layer](../_docs/assets/Networking.jpeg)
 
 
 2. Cluster -> all cluster level resources
@@ -46,12 +46,12 @@ We'll create multiple layers of CloudFormation templates, each containing specif
    see https://www.ruby-toolbox.com/projects/cfn-toml
    2. when the load balancer is up and running, we MUST go to Route 53 and select it to be used
 
-![Cluster+Networking Layers](../_docs/assets/Cluster-Networking-Layers.jpeg)
+![Cluster+Networking Layers](../_docs/assets/Cluster-Networking.jpeg)
 
 3. Service ->
    1. security groups should be setup as follows:
       1. traffic arrives at ALBSecurityGroup on ports 80 and 443; ALBSecurityGroup must implement inbound rules to handle this traffic
-      2. one it arrives at ALB, the traffic is route on internal ports (3000 for FE, 4567 for BE)
+      2. once it arrives at ALB, the traffic is route on internal ports (3000 for FE, 4567 for BE)
    2. define a SecurityGroup -> Allows inbound traffic from the ALB Security Group, restricting it to the specified container port.
    3. define a Fargate Service -> 
       1. Runs as an ECS-managed Fargate service. 
@@ -73,6 +73,8 @@ We'll create multiple layers of CloudFormation templates, each containing specif
          - Used by ECS to pull container images and retrieve secrets. 
          - Grants permissions to interact with Amazon ECR, CloudWatch Logs, and SSM Parameter Store.
 
+![Service+Cluster+Networking Layers](../_docs/assets/Service-Cluster-Networking.jpeg)
+
 4. PostgreSQL DB
    1. **RDS Instance**: A managed PostgreSQL database with configurable parameters such as instance type, backup retention, and deletion protection.
    2. **Database Security Group**: A security group allowing secure access to the database from the application services.
@@ -81,3 +83,5 @@ We'll create multiple layers of CloudFormation templates, each containing specif
    ** Notes: 
    1. when the stack is deployed, we need to go to AWS Systems Manager -> Parameter Store and change the value for the connection string.
    2. "MasterUserPassword" is passed through the command line, see "backend-flask/bin/cfn/db-deploy" script
+
+![SB+Service+Cluster+Networking Layers](../_docs/assets/DB-Service-Cluster-Networking.jpeg)
