@@ -85,3 +85,30 @@ We'll create multiple layers of CloudFormation templates, each containing specif
    2. "MasterUserPassword" is passed through the command line, see "backend-flask/bin/cfn/db-deploy" script
 
 ![SB+Service+Cluster+Networking Layers](../_docs/assets/DB-Service-Cluster-Networking.jpeg)
+
+5. DynamoDB
+   We are going to use SAM (Serverless Application Model) to deploy DynamoDB.
+   1. first we need to install SAM CLI -> https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html
+   2. create a template file "aws/cfn/ddb/template.yaml" containing the following resources:
+      1.	DynamoDB Table (DynamoDBTable)
+            -	A provisioned-mode DynamoDB table with primary key attributes:
+            -	pk (Partition Key)
+            -	sk (Sort Key)
+            -	Includes a Global Secondary Index (GSI) on message_group_uuid and sk.
+            -	Enabled DynamoDB Streams with NEW_IMAGE view type.
+      2.	AWS Lambda Function (ProcessDynamoDBStream)
+            -	ARM64-based Python Lambda function to process DynamoDB Stream events.
+            -	Configurable runtime, memory size, and timeout via parameters.
+            -	Subscribes to the DynamoDB stream for real-time event processing.
+            -	Uses an IAM role for execution (ExecutionRole).
+      3.	CloudWatch Logging
+            -	Log Group (LambdaLogGroup): Stores logs for the Lambda function with a retention of 14 days.
+            -	Log Stream (LambdaLogStream): A specific log stream within the log group.
+      4.	IAM Role (ExecutionRole)
+            -	Grants the Lambda function permissions to:
+            -	Write logs to CloudWatch.
+            -	Manage network interfaces.
+            -	Invoke other Lambda functions.
+            -	Read from DynamoDB Streams.
+
+![DynamoDB](../_docs/assets/DynamoDB.jpeg)

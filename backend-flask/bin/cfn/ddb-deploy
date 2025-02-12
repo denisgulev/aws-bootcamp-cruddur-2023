@@ -1,0 +1,35 @@
+#! /bin/bash
+
+set -e # stop execution if script fails
+
+FUNCTION_DIR="./aws/lambda/cruddur-messaging-stream/"
+#BUILD_PATH=".aws-sam/build/template.yaml"
+TEMPLATE_PATH="./aws/cfn/ddb/template.yaml"
+CONFIG_PATH="/Users/denisgulev/IdeaProjects/aws-bootcamp-cruddur-2023/aws/cfn/ddb/config.toml"
+ARTIFACT_BUCKET="cfn-artifacts-d"
+
+sam validate --lint -t $TEMPLATE_PATH
+
+sam build \
+  --template-file $TEMPLATE_PATH \
+  --config-file $CONFIG_PATH \
+  --base-dir $FUNCTION_DIR
+#  --parameter-overrides \
+
+TEMPLATE_PATH=".aws-sam/build/template.yaml"
+OUTPUT_TEMPLATE_PATH=".aws-sam/build/packaged.yaml"
+
+sam package \
+  --template-file $TEMPLATE_PATH \
+  --output-template-file $OUTPUT_TEMPLATE_PATH \
+  --config-file $CONFIG_PATH \
+  --s3-bucket $ARTIFACT_BUCKET \
+  --s3-prefix "ddb"
+
+sam deploy \
+  --template-file $OUTPUT_TEMPLATE_PATH \
+  --config-file $CONFIG_PATH \
+  --no-execute-changeset \
+  --stack-name "CrdDdb" \
+  --tags group=cruddur-ddb \
+  --capabilities CAPABILITY_NAMED_IAM
