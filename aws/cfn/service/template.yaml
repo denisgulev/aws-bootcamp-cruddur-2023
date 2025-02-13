@@ -270,4 +270,8 @@ Resources:
                 Resource: "*"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-
+Outputs:
+  ServiceName:
+    Value: !GetAtt FargateService.Name
+    Export:
+      Name: !Sub "${AWS::StackName}-ServiceName"

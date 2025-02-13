@@ -112,3 +112,11 @@ We'll create multiple layers of CloudFormation templates, each containing specif
             -	Read from DynamoDB Streams.
 
 ![DynamoDB](../_docs/assets/DynamoDB.jpeg)
+
+6. CI/CD
+   1. once it is deployed, we need to update the "Connections" in AWS CodePipeline->Settings
+   2. In the diagram below:
+      1. Build Step -> pushes the image to ECR repository
+      2. Deploy Step -> triggers a deploy into ECS Cluster
+
+![CodePipeline](../_docs/assets/CodePipeline.jpeg)
