@@ -120,3 +120,15 @@ We'll create multiple layers of CloudFormation templates, each containing specif
       2. Deploy Step -> triggers a deploy into ECS Cluster
 
 ![CodePipeline](../_docs/assets/CodePipeline.jpeg)
+
+7. Static Website Hosting on CloudFront
+   1. Two S3 Buckets:
+        - One for the root domain (e.g., cruddur.example.com).
+        - One for the www subdomain (e.g., www.cruddur.example.com), which redirects to the root domain.
+   2. CloudFront Distribution:
+        - Serves the website securely using HTTPS.
+        - Uses an ACM certificate for SSL/TLS encryption.
+   3. Route 53 DNS Records:
+        - Configures domain names to point to the CloudFront distribution.
+   4. S3 Bucket Policy:
+        - Grants public read access for website content.
