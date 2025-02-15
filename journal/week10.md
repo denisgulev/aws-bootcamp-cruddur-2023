@@ -132,3 +132,6 @@ We'll create multiple layers of CloudFormation templates, each containing specif
         - Configures domain names to point to the CloudFront distribution.
    4. S3 Bucket Policy:
         - Grants public read access for website content.
+   5. in the diagram below, the "A Alias - api.cruddur.denisgulev.com" connects to the ALB
+
+![Frontend](../_docs/assets/Frontend.jpeg)
