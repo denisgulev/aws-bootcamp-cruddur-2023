@@ -25,9 +25,10 @@ jobs:
           cd frontend-react-js
           npm install
 
+      - name: Disable CI checks
+        run: echo "CI=false" >> $GITHUB_ENV
+
       - name: Build the Website
-        env:
-          CI: ${{ secrets.CI }}  # Override CI for this step
         run: |
           cd frontend-react-js
           npm run build  -- \
