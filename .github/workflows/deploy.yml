@@ -10,8 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      CI: false
 
     steps:
       - name: Checkout Code
@@ -28,6 +26,8 @@ jobs:
           npm install
 
       - name: Build the Website
+        env:
+          CI: ${{ secrets.CI }}  # Override CI for this step
         run: |
           cd frontend-react-js
           npm run build  -- \
