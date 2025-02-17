@@ -1,0 +1,10 @@
+[deploy]
+bucket = 'cfn-artifacts-d'
+region = 'eu-south-1'
+stack_name = 'CrdFrontend'
+
+[parameters]
+CertificateArn = 'arn:aws:acm:us-east-1:923264624222:certificate/83b70a27-d438-4d5b-9951-7d4a69bede0d'
+RootBucketName = 'cruddur.denisgulev.com'
+WwwBucketName = 'www.cruddur.denisgulev.com'
+HostedZoneId = 'Z0235753EY3QFQHMCD2Z'

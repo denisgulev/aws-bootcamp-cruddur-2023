@@ -21,7 +21,7 @@ export default function SigninPage() {
     setErrors('');
 
     try {
-      const { isSignedIn, nextStep } = await signIn({
+      const { isSignedIn } = await signIn({
         username: credentials.email,
         password: credentials.password,
       });

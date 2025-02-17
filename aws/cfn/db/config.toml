@@ -1,0 +1,7 @@
+[deploy]
+bucket = 'cfn-artifacts-d'
+region = 'eu-south-1'
+stack_name = 'CrdDb'
+
+[parameters]
+MasterUsername = 'root'

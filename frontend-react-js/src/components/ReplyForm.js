@@ -1,6 +1,5 @@
 import './ReplyForm.css';
 import React, { useState } from "react";
-import { ReactComponent as BombIcon } from './svg/bomb.svg';
 
 import ActivityContent from '../components/ActivityContent';
 

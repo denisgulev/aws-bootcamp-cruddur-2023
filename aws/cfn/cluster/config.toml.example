@@ -1,0 +1,9 @@
+[deploy]
+profile = 'myprofile'
+bucket = 'mybucket'
+region = 'us-east-1'
+stack_name = 'stack_name'
+
+[parameters]
+ArtifactName = 'myartifact'
+InstanceType = 't2.micro'

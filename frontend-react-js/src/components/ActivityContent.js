@@ -5,7 +5,7 @@ import { format_datetime, time_ago } from '../lib/DateTimeFormats';
 
 export default function ActivityContent({ activity }) {
   const formatExpiresAt = (expiresAt) => format_datetime(expiresAt, 'minutes');
-  const formatCreatedAt = (createdAt) => format_datetime(createdAt, 'hours');
+//  const formatCreatedAt = (createdAt) => format_datetime(createdAt, 'hours');
 
   const expiresAt = activity.expires_at && (
     <div className="expires_at" title={activity.expires_at}>
