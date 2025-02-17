@@ -33,7 +33,7 @@ export default function SigninPage() {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error("Error during sign-in operation:", error);
+      console.error("Error during sign-in operation: ", error);
       if (error.code === 'UserNotConfirmedException') {
         window.location.href = '/confirm';
       } else {
