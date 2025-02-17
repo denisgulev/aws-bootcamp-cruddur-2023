@@ -28,7 +28,13 @@ jobs:
       - name: Build the Website
         run: |
           cd frontend-react-js
-          npm run build
+          npm run build  -- \
+            --REACT_APP_BACKEND_URL="https://api.denisgulev.com" \
+            --REACT_APP_FRONTEND_URL: "http://cruddur.denisgulev.com" \
+            --REACT_APP_AWS_PROJECT_REGION="${{ secrets.AWS_REGION }}" \
+            --REACT_APP_AWS_COGNITO_REGION="${{ secrets.AWS_REGION }}" \
+            --REACT_APP_AWS_USER_POOLS_ID="${{ secrets.AWS_USER_POOL_ID }}" \
+            --REACT_APP_CLIENT_ID="${{ secrets.AWS_USER_POOL_APP_CLIENT_ID }}"
 
       - name: Configure AWS CLI
         run: |
