@@ -86,7 +86,7 @@ Resources:
         HttpVersion: http2
         DefaultRootObject: index.html
         Origins:
-            - DomainName: !Ref RootBucket
+            - DomainName: !GetAtt RootBucket.RegionalDomainName
               Id: RootOrigin
               S3OriginConfig: {}
         DefaultCacheBehavior:
