@@ -30,7 +30,7 @@ The `/journal` directory contains
 - [X] [Week 7](journal/week7.md) Solving CORS with a Load Balancer and Custom Domain
 - [X] [Week 8](journal/week8.md) Image Upload to S3, API Gateway, Lambda functions (process/upload image, authorize user), AWS CDK
 - [X] [Week 9](journal/week9.md) Setting up CodePipeline with CodeBuild
-- [ ] [Week 10](journal/week10.md)
+- [X] [Week 10](journal/week10.md) Creation of CloudFormation templates for different services
 - [ ] [Week 11](journal/week11.md)
 - [ ] [Week 12](journal/week12.md)
 - [ ] [Week 13](journal/week13.md)

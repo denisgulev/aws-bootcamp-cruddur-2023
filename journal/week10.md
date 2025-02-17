@@ -1,6 +1,6 @@
-# Week 10 — CloudFormation Part 1
+# Week 10 — CloudFormation
 
-We are going to define multiple layer cloudFormation templates, each containing specifications for particulare resources.
+We are going to define multiple layer cloudFormation templates, each containing specifications for particular resources.
 
 1. Define CloudFormation for ECS fargate
    1. create template for ECS resource
