@@ -78,7 +78,7 @@ CREATE TABLE public.users (
   uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   display_name text,
   handle text,
-  cognito_user_id text,
+  cognito_user_uuid text,
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
 ```
@@ -351,7 +351,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class HomeActivities:
-  def run(cognito_user_id=None):
+  def run(cognito_user_uuid=None):
 
     with tracer.start_as_current_span("home-activities-mock-data"):
       ....
@@ -502,7 +502,7 @@ def lambda_handler(event, context):
              display_name, 
              email, 
              handle, 
-             cognito_user_id
+             cognito_user_uuid
          ) 
          VALUES(
              '{user_display_name}', 

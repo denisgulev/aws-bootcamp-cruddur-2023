@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
 from lib.db import db
 from lib.ddb import Ddb
 import logging
@@ -7,11 +5,12 @@ import logging
 LOGGER = logging.getLogger("create_message")
 
 class CreateMessage:
+  @staticmethod
   # mode indicates if we want to create a new message_group or using an existing one
-  def run(mode, message, cognito_user_id, message_group_uuid=None, user_handle=None):
+  def run(mode, message, cognito_user_uuid, message_group_uuid=None, user_handle=None):
     LOGGER.info(f"mode: ${mode}")
     LOGGER.info(f"message: ${message}")
-    LOGGER.info(f"cognito_user_id: ${cognito_user_id}")
+    LOGGER.info(f"cognito_user_uuid: ${cognito_user_uuid}")
     LOGGER.info(f"message_group_uuid: ${message_group_uuid}")
     LOGGER.info(f"user_handle: ${user_handle}")
 
@@ -25,8 +24,8 @@ class CreateMessage:
         model['errors'] = ['message_group_uuid_blank']
 
 
-    if cognito_user_id is None or len(cognito_user_id) < 1:
-      model['errors'] = ['cognito_user_id_blank']
+    if cognito_user_uuid is None or len(cognito_user_uuid) < 1:
+      model['errors'] = ['cognito_user_uuid_blank']
 
     if mode == "create":
       if user_handle is None or len(user_handle) < 1:
@@ -52,7 +51,7 @@ class CreateMessage:
       else:
         rev_handle = user_handle
       users = db.query_array(sql,{
-        'cognito_user_id': cognito_user_id,
+        'cognito_user_uuid': cognito_user_uuid,
         'user_receiver_handle': rev_handle
       })
       LOGGER.info("USERS =-=-=-=-==")

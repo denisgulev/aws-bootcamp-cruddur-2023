@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
 from lib.db import db
 
 class UserActivities:
+  @staticmethod
   def run(user_handle):
     model = {
       'errors': None,

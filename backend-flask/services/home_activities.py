@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from opentelemetry import trace
 
 from lib.db import db
@@ -7,7 +7,8 @@ from lib.db import db
 tracer = trace.get_tracer("home.activities")
 
 class HomeActivities:
-  def run(cognito_user_id=None):
+  @staticmethod
+  def run(cognito_user_uuid=None):
 
     with tracer.start_as_current_span("home-activities-mock-data"):
       span = trace.get_current_span()

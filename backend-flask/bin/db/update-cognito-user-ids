@@ -21,7 +21,7 @@ from lib.db import db
 def update_users_with_cognito_users_ids(handle, sub):
     sql = """
         UPDATE public.users
-        SET cognito_user_id = %(sub)s
+        SET cognito_user_uuid = %(sub)s
         WHERE handle = %(handle)s;
     """
 
@@ -53,7 +53,7 @@ def get_cognito_users_ids():
 users = get_cognito_users_ids()
 
 for handle,sub in users.items():
-    print(f"Updating user: {handle} with cognito_user_id: {sub}")
+    print(f"Updating user: {handle} with cognito_user_uuid: {sub}")
     update_users_with_cognito_users_ids(
         handle=handle,
         sub=sub
