@@ -103,3 +103,7 @@
 5. navigate to `cruddur-post-confirmation` lambda -> Configuration -> Environment variables -> update `CONNECTION_URL` with the new RDS endpoint and `RDS_HOST`
 6. also in the lambda -> set VPC to use `CrdNet` VPC and create a new SG for the lambda
 7. create an inbound rule on the RDS SG to allow traffic from the lambda SG
+
+### Adjust CodePipeline
+1. adjust `buildspec.yml` path, need to specify the path from the root directory
+2. added permission to operate on S3 bucket, ECS and Codebuild for the CodePipelineRole
