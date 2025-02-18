@@ -41,7 +41,7 @@ Parameters:
     Description: The build project timeout in minutes
   BuildSpec:
     Type: String
-    Default: buildspec.yaml
+    Default: "backend-flask/buildspec.yml"
     Description: The buildspec file to use for the build project
 
 Resources:
@@ -85,7 +85,16 @@ Resources:
             Principal:
               Service: [ codebuild.amazonaws.com ]
       Policies:
-        - PolicyName: !Sub "${AWS::StackName}-ERCPolicy"
+        - PolicyName: !Sub "${AWS::StackName}-S3Policy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Effect: Allow
+                Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+        - PolicyName: !Sub "${AWS::StackName}-ECRPolicy"
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -221,8 +230,10 @@ Resources:
                 - ecs:DescribeTasks
                 - ecs:RegisterTaskDefinition
                 - ecs:UpdateService
+                - ecs:ListTasks
+                - ecs:TagResource
               Resource: '*'
-        - PolicyName: !Sub "${AWS::StackName}-CodeStartPolicy"
+        - PolicyName: !Sub "${AWS::StackName}-CodeStarPolicy"
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -242,13 +253,6 @@ Resources:
                   - logs:PutLogEvents
                   - cloudformation:*
                   - iam:PassRole
-                  - iam:CreateRole
-                  - iam:DetachRolePolicy
-                  - iam:DeleteRolePolicy
-                  - iam:PutRolePolicy
-                  - iam:DeleteRole
-                  - iam:AttachRolePolicy
-                  - iam:GetRole
                 Resource: '*'
         - PolicyName: !Sub "${AWS::StackName}-CodePipelineBuildPolicy"
           PolicyDocument:
@@ -257,8 +261,8 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                  - codebuild:StopBuild
-                  - codebuild:RetryBuild
+                  # even though Batch is not active, AWS still requires this permission
+                  - codebuild:BatchGetBuilds
                 Resource: !Join
                   - ''
                   - - 'arn:aws:codebuild:'
