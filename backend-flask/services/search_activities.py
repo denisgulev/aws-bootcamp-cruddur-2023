@@ -1,5 +1,7 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
+
 class SearchActivities:
+  @staticmethod
   def run(search_term):
     model = {
       'errors': None,
@@ -8,7 +10,7 @@ class SearchActivities:
 
     now = datetime.now(timezone.utc).astimezone()
 
-    if search_term == None or len(search_term) < 1:
+    if search_term is None or len(search_term) < 1:
       model['errors'] = ['search_term_blank']
     else:
       results = [{

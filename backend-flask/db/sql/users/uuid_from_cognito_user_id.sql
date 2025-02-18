@@ -2,5 +2,5 @@ SELECT
   users.uuid
 FROM public.users
 WHERE
-  users.cognito_user_id = %(cognito_user_id)s
+  users.cognito_user_uuid = %(cognito_user_uuid)s
 LIMIT 1

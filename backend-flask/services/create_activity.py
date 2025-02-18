@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CreateActivity:
+  @staticmethod
   def run(message, cognito_user_uuid, ttl):
     model = {
       'errors': None,
@@ -55,6 +56,7 @@ class CreateActivity:
       model['data'] = object_json
     return model
 
+  @staticmethod
   def create_activity(cognito_user_uuid, message, expires_at):
     sql = f"""
       INSERT INTO public.activities (user_uuid, message, expires_at) 
@@ -73,6 +75,7 @@ class CreateActivity:
 
     return uuid
 
+  @staticmethod
   def query_object_activity(uuid):
     sql = f"""
       SELECT

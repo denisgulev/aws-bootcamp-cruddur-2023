@@ -1,8 +1,9 @@
 from lib.db import db
 
 class UpdateProfile:
-    def run(cognito_user_id,bio,display_name):
-        print('cognito_user_id:',cognito_user_id)
+    @staticmethod
+    def run(cognito_user_uuid,bio,display_name):
+        print('cognito_user_uuid:',cognito_user_uuid)
         print('bio:',bio)
         print('display_name:',display_name)
         model = {
@@ -19,21 +20,24 @@ class UpdateProfile:
                 'display_name': display_name
             }
         else:
-            handle = UpdateProfile.update_profile(bio,display_name,cognito_user_id)
-            data = UpdateProfile.query_users_short(handle)
+            UpdateProfile.update_profile(bio,display_name,cognito_user_uuid)
+            data = UpdateProfile.query_users_short()
             model['data'] = data
         return model
 
-    def update_profile(bio,display_name,cognito_user_id):
+    @staticmethod
+    def update_profile(bio,display_name,cognito_user_uuid):
         if bio is None:
             bio = ''
 
         sql = db.template('users','update')
-        handle = db.query_commit(sql,{
-            'cognito_user_id': cognito_user_id,
+        db.query_commit(sql,{
+            'cognito_user_uuid': cognito_user_uuid,
             'bio': bio,
             'display_name': display_name
         })
+
+    @staticmethod
     def query_users_short(handle):
         sql = db.template('users','short')
         data = db.query_object_json(sql,{

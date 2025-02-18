@@ -60,7 +60,7 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
 
   const close = (event) => {
     console.log('close', event.target)
-    if (event.target.classList.contains("popup_form_wrap")) {
+    if (event.target.classList.contains("reply_popup")) {
       setPopped(false)
     }
   }
@@ -68,7 +68,7 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
   if (!popped) return null;
 
   return (
-    <div className="popup_form_wrap" onClick={close}>
+    <div className="popup_form_wrap reply_popup" onClick={close}>
       <div className="popup_form">
         <div className="popup_heading"></div>
         <div className="popup_content">

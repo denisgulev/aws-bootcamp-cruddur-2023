@@ -2,7 +2,7 @@ SELECT
   users.uuid,
   users.display_name,
   users.handle,
-  CASE users.cognito_user_id = %(cognito_user_id)s
+  CASE users.cognito_user_uuid = %(cognito_user_uuid)s
   WHEN TRUE THEN
     'sender'
   WHEN FALSE THEN
@@ -12,6 +12,6 @@ SELECT
   END as kind
 FROM public.users
 WHERE
-  users.cognito_user_id = %(cognito_user_id)s
+  users.cognito_user_uuid = %(cognito_user_uuid)s
   OR
   users.handle = %(user_receiver_handle)s

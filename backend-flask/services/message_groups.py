@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
 from lib.ddb import Ddb
 from lib.db import db
 import logging
@@ -7,15 +5,16 @@ import logging
 LOGGER = logging.getLogger("message_groups")
 
 class MessageGroups:
-  def run(cognito_user_id):
+  @staticmethod
+  def run(cognito_user_uuid):
     model = {
       'errors': None,
       'data': None
     }
 
-    sql = db.template('users','uuid_from_cognito_user_id')
+    sql = db.template('users','uuid_from_cognito_user_uuid')
     my_user_uuid = db.query_value(sql,{
-      'cognito_user_id': cognito_user_id
+      'cognito_user_uuid': cognito_user_uuid
     })
 
     LOGGER.info(f"UUID: {my_user_uuid}")
