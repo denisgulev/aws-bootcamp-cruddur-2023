@@ -5,6 +5,7 @@ from jose.exceptions import JOSEError
 from jose.utils import base64url_decode
 from functools import wraps, partial
 from flask import request, g
+from flask import current_app as app
 import os
 
 HTTP_HEADER = "Authorization"
@@ -119,7 +120,9 @@ class CognitoToken:
 
 def jwt_required(f=None, on_error=None):
     if f is None:
-        return partial(jwt_required, on_error)
+        def wrapper(f):
+            return jwt_required(f, on_error)
+        return wrapper
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
