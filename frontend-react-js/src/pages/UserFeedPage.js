@@ -17,7 +17,7 @@ export default function UserFeedPage() {
   const { handle } = useParams();
 
   // Use the useAuth hook to get the authenticated user
-  const { user } = useAuth(); // Assuming useAuth provides the current authenticated user
+  const { user } = useAuth();
 
   const loadData = async () => {
     try {
