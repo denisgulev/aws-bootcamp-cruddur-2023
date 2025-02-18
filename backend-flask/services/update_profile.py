@@ -20,8 +20,8 @@ class UpdateProfile:
                 'display_name': display_name
             }
         else:
-            UpdateProfile.update_profile(bio,display_name,cognito_user_uuid)
-            data = UpdateProfile.query_users_short()
+            handle = UpdateProfile.update_profile(bio,display_name,cognito_user_uuid)
+            data = UpdateProfile.query_users_short(handle)
             model['data'] = data
         return model
 
@@ -31,7 +31,7 @@ class UpdateProfile:
             bio = ''
 
         sql = db.template('users','update')
-        db.query_commit(sql,{
+        return db.query_commit(sql,{
             'cognito_user_uuid': cognito_user_uuid,
             'bio': bio,
             'display_name': display_name
