@@ -50,7 +50,7 @@ Parameters:
     Default: '3njmudq5anl6q3maonbbt8f6uf'
   EnvFrontendUrl:
     Type: String
-    Default: 'https://app.denisgulev.com'
+    Default: 'https://cruddur.denisgulev.com'
   EnvBackendUrl:
     Type: String
     Default: 'https://api.denisgulev.com'

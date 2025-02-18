@@ -1,6 +1,7 @@
 import './ActivityForm.css';
 import React, { useState } from "react";
 import { ReactComponent as BombIcon } from './svg/bomb.svg';
+import { setAccessToken } from '../hooks/useAuth';
 
 export default function ActivityForm({ popped, setPopped, setActivities }) {
   const [count, setCount] = useState(0);
@@ -18,9 +19,15 @@ export default function ActivityForm({ popped, setPopped, setActivities }) {
 
     try {
       const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/activities`;
+
+      await setAccessToken();
+      const access_token = localStorage.getItem('access_token')
+
       const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ message, ttl }),

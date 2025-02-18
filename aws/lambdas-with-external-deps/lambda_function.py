@@ -24,7 +24,7 @@ def lambda_handler(event, context):
     user_display_name   = user['name']
     user_email          = user['email']
     user_handle         = user['preferred_username']
-    user_cognito_id     = user['sub']
+    user_cognito_uuid     = user['sub']
 
     cur = conn.cursor()
     sql = f"""
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
                 display_name, 
                 email, 
                 handle, 
-                cognito_user_id
+                cognito_user_uuid
             ) 
             VALUES(
                 %s, 
@@ -42,7 +42,7 @@ def lambda_handler(event, context):
             )
     """
     print("SQL query to be executed: ", sql)
-    cur.execute(sql, user_display_name, user_email, user_handle, user_cognito_id)
+    cur.execute(sql, (user_display_name, user_email, user_handle, user_cognito_uuid))
     conn.commit()
 
     return event

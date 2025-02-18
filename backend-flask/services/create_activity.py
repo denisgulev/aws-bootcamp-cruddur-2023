@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CreateActivity:
-  def run(message, user_handle, ttl):
+  def run(message, cognito_user_uuid, ttl):
     model = {
       'errors': None,
       'data': None
@@ -36,8 +36,8 @@ class CreateActivity:
     else:
       model['errors'] = ['ttl_blank']
 
-    if user_handle is None or len(user_handle) < 1:
-      model['errors'] = ['user_handle_blank']
+    if cognito_user_uuid is None or len(cognito_user_uuid) < 1:
+      model['errors'] = ['cognito_user_uuid_blank']
 
     if message is None or len(message) < 1:
       model['errors'] = ['message_blank']
@@ -46,27 +46,27 @@ class CreateActivity:
 
     if model['errors']:
       model['data'] = {
-        'handle':  user_handle,
+        'handle':  cognito_user_uuid,
         'message': message
       }
     else:
-      uuid = CreateActivity.create_activity(handle=user_handle, message=message, expires_at=(now + ttl_offset).isoformat())
+      uuid = CreateActivity.create_activity(cognito_user_uuid=cognito_user_uuid, message=message, expires_at=(now + ttl_offset).isoformat())
       object_json = CreateActivity.query_object_activity(uuid)
       model['data'] = object_json
     return model
 
-  def create_activity(handle, message, expires_at):
+  def create_activity(cognito_user_uuid, message, expires_at):
     sql = f"""
       INSERT INTO public.activities (user_uuid, message, expires_at) 
       VALUES (
-        (SELECT uuid FROM public.users WHERE users.handle = %(handle)s LIMIT 1),
+        (SELECT uuid FROM public.users WHERE users.cognito_user_uuid = %(cognito_user_uuid)s LIMIT 1),
         %(message)s, 
         %(expires_at)s
       ) RETURNING uuid;
     """
 
     uuid = db.query_commit_with_returning_id(sql,{
-                                               'handle': handle,
+                                               'cognito_user_uuid': cognito_user_uuid,
                                                'message': message,
                                                'expires_at': expires_at
     })
