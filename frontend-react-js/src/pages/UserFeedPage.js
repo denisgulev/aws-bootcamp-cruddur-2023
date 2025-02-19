@@ -33,7 +33,7 @@ export default function UserFeedPage() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("profile --> ", data.profile)
+        // console.log("profile --> ", data.profile)
         setProfile(data.profile);
         setActivities(data.activities);
       } else {

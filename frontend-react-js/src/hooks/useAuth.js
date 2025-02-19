@@ -21,7 +21,7 @@ export function useAuth() {
       try {
         const attributes = await fetchUserAttributes();
         await setAccessToken();
-        console.log("attributes --> ", attributes)
+        //console.log("attributes --> ", attributes)
 
         setUser({
           cognito_user_uuid: attributes.sub,

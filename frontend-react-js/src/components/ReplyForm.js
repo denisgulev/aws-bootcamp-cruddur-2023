@@ -59,7 +59,6 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
   };
 
   const close = (event) => {
-    console.log('close', event.target)
     if (event.target.classList.contains("reply_popup")) {
       setPopped(false)
     }
