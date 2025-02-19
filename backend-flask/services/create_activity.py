@@ -58,38 +58,20 @@ class CreateActivity:
 
   @staticmethod
   def create_activity(cognito_user_uuid, message, expires_at):
-    sql = f"""
-      INSERT INTO public.activities (user_uuid, message, expires_at) 
-      VALUES (
-        (SELECT uuid FROM public.users WHERE users.cognito_user_uuid = %(cognito_user_uuid)s LIMIT 1),
-        %(message)s, 
-        %(expires_at)s
-      ) RETURNING uuid;
-    """
+    sql = db.template('users','create')
 
     uuid = db.query_commit_with_returning_id(sql,{
-                                               'cognito_user_uuid': cognito_user_uuid,
-                                               'message': message,
-                                               'expires_at': expires_at
+      'cognito_user_uuid': cognito_user_uuid,
+      'message': message,
+      'expires_at': expires_at
     })
 
     return uuid
 
   @staticmethod
   def query_object_activity(uuid):
-    sql = f"""
-      SELECT
-        activities.uuid,
-        users.display_name,
-        users.handle,
-        activities.message,
-        activities.created_at,
-        activities.expires_at
-      FROM public.activities
-      INNER JOIN public.users ON users.uuid = activities.user_uuid 
-      WHERE 
-        activities.uuid = %(uuid)s
-    """
+    sql = db.template('users','get_object')
+
     return db.query_object_json(sql,{
       'uuid': uuid
     })

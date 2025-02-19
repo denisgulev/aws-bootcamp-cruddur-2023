@@ -3,7 +3,7 @@ import ActivityItem from './ActivityItem';
 import EditProfileButton from './EditProfileButton';
 import ProfileAvatar from './ProfileAvatar';
 
-export default function ActivityFeed({ profilePage, title, handle, bio, cognito_user_uuid, activities, setReplyActivity, setPopped }) {
+export default function ActivityFeed({ profilePage, title, handle, bio, cognito_user_uuid, setReplyActivity, setPopped, activities }) {
   return (
     <div className="activity_feed">
       <div className="activity_feed_heading">

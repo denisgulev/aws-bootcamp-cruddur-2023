@@ -22,18 +22,20 @@ export default function ActivityItem({ activity, setReplyActivity, setPopped }) 
 
   return (
     <div className="activity_item">
-      <ActivityContent activity={activity} />
-      <div className="activity_actions">
-        <ActivityActionReply
-          setReplyActivity={setReplyActivity}
-          activity={activity}
-          setPopped={setPopped}
-          activity_uuid={activity.uuid}
-          count={activity.replies_count}
-        />
-        <ActivityActionRepost activity_uuid={activity.uuid} count={activity.reposts_count} />
-        <ActivityActionLike activity_uuid={activity.uuid} count={activity.likes_count} />
-        <ActivityActionShare activity_uuid={activity.uuid} />
+      <div className="activity_main">
+        <ActivityContent activity={activity} />
+        <div className="activity_actions">
+          <ActivityActionReply
+            setReplyActivity={setReplyActivity}
+            activity={activity}
+            setPopped={setPopped}
+            activity_uuid={activity.uuid}
+            count={activity.replies_count}
+          />
+          <ActivityActionRepost activity_uuid={activity.uuid} count={activity.reposts_count} />
+          <ActivityActionLike activity_uuid={activity.uuid} count={activity.likes_count} />
+          <ActivityActionShare activity_uuid={activity.uuid} />
+        </div>
       </div>
       {replies}
     </div>

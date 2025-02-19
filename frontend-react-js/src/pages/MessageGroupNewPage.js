@@ -20,46 +20,26 @@ export default function MessageGroupNewPage() {
     const params = useParams();
 
     const loadUserShortData = async () => {
-        try {
-            const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/users/${params.handle}/short`
-            const res = await fetch(backend_url, {
-                method: "GET"
-            });
-            let resJson = await res.json();
-            console.log("resJson inside newPage users/../short", resJson)
-            if (res.status === 200) {
-                console.log('other user:', resJson)
-                setOtherUser(resJson)
-            } else {
-                console.log(res)
+        const url = `${process.env.REACT_APP_BACKEND_URL}/api/users/@${params.handle}/short`
+
+        get(url, {
+            auth: true,
+            success: function (data) {
+                console.log('other user:', data)
+                setOtherUser(data)
             }
-        } catch (err) {
-            console.log(err);
-        }
+        })
     };
 
     const loadMessageGroupsData = async () => {
-        try {
-            await setAccessToken();
-            const access_token = localStorage.getItem('access_token')
+        const url = `${process.env.REACT_APP_BACKEND_URL}/api/message_groups`
 
-            const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/message_groups`
-            const res = await fetch(backend_url, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                },
-                method: "GET"
-            });
-            let resJson = await res.json();
-            console.log("message_groups inside newPage:", resJson)
-            if (res.status === 200) {
-                setMessageGroups(resJson)
-            } else {
-                console.log(res)
+        get(url, {
+            auth: true,
+            success: function (data) {
+                setMessageGroups(data)
             }
-        } catch (err) {
-            console.log(err);
-        }
+        })
     };
 
     React.useEffect(() => {
