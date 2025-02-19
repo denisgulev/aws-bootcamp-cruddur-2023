@@ -3,13 +3,13 @@ import React from "react";
 import process from 'process';
 import { getAccessToken } from '../hooks/useAuth';
 import FormErrors from '../components/FormErrors';
-import { post } from '../lib/Requests';
+import { put } from '../lib/Requests';
 import { Form } from 'react-router-dom';
 
 export default function ProfileForm(props) {
     const [bio, setBio] = React.useState('');
     const [displayName, setDisplayName] = React.useState('');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = React.useState({});
 
     React.useEffect(() => {
         setBio(props.profile.bio || '');
@@ -90,9 +90,9 @@ export default function ProfileForm(props) {
             bio: bio,
             display_name: displayName
         }
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`
+        const url = `${process.env.REACT_APP_BACKEND_URL}/api/profile/update`
 
-        post(url, payload_data, {
+        put(url, payload_data, {
             auth: true,
             setErrors: setErrors,
             success: function (data) {

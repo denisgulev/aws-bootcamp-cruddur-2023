@@ -5,7 +5,7 @@ import DesktopNavigation from '../components/DesktopNavigation';
 import MessageGroupFeed from '../components/MessageGroupFeed';
 import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
 import { useHomeFeed } from '../hooks/useHomeFeed';
-import { setAccessToken } from '../hooks/useAuth';
+import { get } from '../lib/Requests';
 
 export default function MessageGroupsPage() {
   const [messageGroups, setMessageGroups] = React.useState([]);

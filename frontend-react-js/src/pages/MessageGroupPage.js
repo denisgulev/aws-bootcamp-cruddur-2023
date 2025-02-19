@@ -8,7 +8,7 @@ import MessagesFeed from '../components/MessageFeed';
 import MessagesForm from '../components/MessageForm';
 import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
 import { useHomeFeed } from '../hooks/useHomeFeed';
-import { setAccessToken } from '../hooks/useAuth';
+import { get } from '../lib/Requests';
 
 export default function MessageGroupPage() {
   const [messageGroups, setMessageGroups] = React.useState([]);

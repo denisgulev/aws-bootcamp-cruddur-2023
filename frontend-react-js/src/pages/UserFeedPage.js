@@ -5,8 +5,9 @@ import DesktopNavigation from '../components/DesktopNavigation';
 import DesktopSidebar from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
-import { useAuth, setAccessToken } from '../hooks/useAuth'; // Import the useAuth hook
+import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
 import ProfileForm from '../components/ProfileForm';
+import { get } from '../lib/Requests';
 
 export default function UserFeedPage() {
   const [profile, setProfile] = useState([]);
@@ -20,11 +21,12 @@ export default function UserFeedPage() {
   const { user } = useAuth();
 
   const loadData = async () => {
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/@${params.handle}`
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${params.handle}`
 
     get(url, {
       auth: false,
       success: function (data) {
+        console.log("data", data)
         console.log('setprofile', data.profile)
         setProfile(data.profile)
         setActivities(data.activities)
