@@ -53,7 +53,7 @@ def health_check():
 @jwt_required()
 def data_message_groups():
   model = MessageGroups.run(cognito_user_uuid=g.cognito_user_uuid)
-  model_json(model)
+  return model_json(model)
 
 
 @app.route("/api/messages/<string:message_group_uuid>", methods=['GET'])
@@ -63,7 +63,7 @@ def data_messages(message_group_uuid):
     cognito_user_uuid=g.cognito_user_uuid,
     message_group_uuid=message_group_uuid
   )
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/profile/update", methods=['POST','OPTIONS'])
 @cross_origin()
@@ -77,7 +77,7 @@ def data_update_profile():
     bio=bio,
     display_name=display_name
   )
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/messages", methods=['POST','OPTIONS'])
 @cross_origin()
@@ -102,7 +102,7 @@ def data_create_message():
       message_group_uuid=message_group_uuid
     )
 
-  model_json(model)
+  return model_json(model)
 
 def default_home_feed(e):
   app.logger.debug("unauthenticated request")
@@ -124,13 +124,13 @@ def data_notifications():
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
 def data_handle(handle):
   model = UserActivities.run(handle)
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/activities/search", methods=['GET'])
 def data_search():
   term = request.args.get('term')
   model = SearchActivities.run(term)
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
@@ -139,7 +139,7 @@ def data_activities():
   message = request.json['message']
   ttl = request.json['ttl']
   model = CreateActivity.run(message, g.cognito_user_uuid, ttl)
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
 def data_show_activity(activity_uuid):
@@ -152,7 +152,7 @@ def data_activities_reply(activity_uuid):
   user_handle  = 'denis'
   message = request.json['message']
   model = CreateReply.run(message, user_handle, activity_uuid)
-  model_json(model)
+  return model_json(model)
 
 @app.route("/api/users/<string:handle>/short", methods=['GET'])
 def data_users_short(handle):

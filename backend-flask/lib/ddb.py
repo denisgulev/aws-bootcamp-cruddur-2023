@@ -1,5 +1,4 @@
 import boto3
-import sys
 import uuid
 import os
 from datetime import datetime, timezone

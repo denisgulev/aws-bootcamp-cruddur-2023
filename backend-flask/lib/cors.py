@@ -1,4 +1,4 @@
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import os
 
 def init_cors(app):
