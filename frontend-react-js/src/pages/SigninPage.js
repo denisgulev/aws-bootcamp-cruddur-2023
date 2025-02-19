@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ReactComponent as Logo } from '../components/svg/logo.svg';
 import { Link } from "react-router-dom";
 import { signIn, fetchAuthSession } from 'aws-amplify/auth';
+import FormErrors from '../components/FormErrors';
 
 export default function SigninPage() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -33,12 +34,10 @@ export default function SigninPage() {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error("Error during sign-in operation: ", error);
       if (error.code === 'UserNotConfirmedException') {
         window.location.href = '/confirm';
-      } else {
-        setErrors(error.message || 'An error occurred during sign-in.');
       }
+      setErrors([error.message]);
     }
   };
 
@@ -70,7 +69,7 @@ export default function SigninPage() {
               />
             </div>
           </div>
-          {errors && <div className="errors">{errors}</div>}
+          <FormErrors errors={errors} />
           <div className="submit">
             <Link to="/forgot" className="forgot-link">
               Forgot Password?

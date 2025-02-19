@@ -16,7 +16,8 @@ class Db:
         self.pool = None
         self.init_pool()
 
-    def template(self,*args):
+    @staticmethod
+    def template(*args):
         pathing = list((app.root_path,'db','sql',) + args)
         pathing[-1] = pathing[-1] + ".sql"
 
@@ -34,7 +35,8 @@ class Db:
         connection_url = os.getenv("CONNECTION_URL")
         self.pool = ConnectionPool(connection_url)
 
-    def print_sql(self, title, sql, params=None):
+    @staticmethod
+    def print_sql(title, sql, params=None):
         if params is None:
             params = {}
         cyan = '\033[96m'
@@ -44,7 +46,8 @@ class Db:
         logger.info(params)
 
 
-    def print_params(self,params):
+    @staticmethod
+    def print_params(params):
         blue = '\033[94m'
         no_color = '\033[0m'
         logger.info(f'{blue} SQL Params:{no_color}')
@@ -144,7 +147,8 @@ class Db:
                 json = cur.fetchone()
                 return json[0]
 
-    def print_sql_err(self, err):
+    @staticmethod
+    def print_sql_err(err):
         err_type, err_obj, traceback = sys.exc_info()
 
         line_num = traceback.tb_lineno
@@ -157,14 +161,16 @@ class Db:
         # print("pgerror:", err.pgerror)
         # print("pgcode:", err.pgcode, "\n")
 
-    def query_wrap_object(self, template):
+    @staticmethod
+    def query_wrap_object(template):
         return f'''
           (SELECT COALESCE(row_to_json(object_row),'{{}}'::json) FROM (
           {template}
           ) as object_row);
         '''
 
-    def query_wrap_array(self, template):
+    @staticmethod
+    def query_wrap_array(template):
         return f'''
           (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
           {template}

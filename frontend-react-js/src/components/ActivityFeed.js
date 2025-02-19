@@ -3,8 +3,7 @@ import ActivityItem from './ActivityItem';
 import EditProfileButton from './EditProfileButton';
 import ProfileAvatar from './ProfileAvatar';
 
-export default function ActivityFeed({ profilePage, title, handle, bio, cognito_user_uuid, activities, setReplyActivity, setPopped }) {
-  console.log("user uuid in ACTIVITY FEED --> ", cognito_user_uuid)
+export default function ActivityFeed({ profilePage, title, handle, bio, cognito_user_uuid, setReplyActivity, setPopped, activities }) {
   return (
     <div className="activity_feed">
       <div className="activity_feed_heading">

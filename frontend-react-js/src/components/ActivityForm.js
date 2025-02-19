@@ -1,12 +1,14 @@
 import './ActivityForm.css';
 import React, { useState } from "react";
 import { ReactComponent as BombIcon } from './svg/bomb.svg';
-import { setAccessToken } from '../hooks/useAuth';
+import FormErrors from '../components/FormErrors';
+import { post } from '../lib/Requests';
 
 export default function ActivityForm({ popped, setPopped, setActivities }) {
   const [count, setCount] = useState(0);
   const [message, setMessage] = useState('');
   const [ttl, setTtl] = useState('7-days');
+  const [errors, setErrors] = useState({});
 
   // Dynamically set class for character count
   const charCountClasses = ['count'];
@@ -16,35 +18,24 @@ export default function ActivityForm({ popped, setPopped, setActivities }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({})
 
-    try {
-      const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/activities`;
+    const payload_data = {
+      ttl: ttl,
+      message: message
+    }
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities`
 
-      await setAccessToken();
-      const access_token = localStorage.getItem('access_token')
-
-      const response = await fetch(backendUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${access_token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message, ttl }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+    post(url, payload_data, {
+      auth: true,
+      setErrors: setErrors,
+      success: function (data) {
         // Add the new activity to the feed
         setActivities((current) => [data, ...current]);
         // Reset the form
         resetForm();
-      } else {
-        console.error('Failed to submit activity:', await response.text());
       }
-    } catch (error) {
-      console.error('Error submitting activity:', error);
-    }
+    })
   };
 
   const handleTextareaChange = (event) => {
@@ -91,6 +82,7 @@ export default function ActivityForm({ popped, setPopped, setActivities }) {
           </select>
         </div>
       </div>
+      <FormErrors errors={errors} />
     </form>
   );
 }

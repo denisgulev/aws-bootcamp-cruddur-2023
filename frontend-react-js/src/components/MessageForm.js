@@ -1,11 +1,13 @@
 import './MessageForm.css';
 import React, { useState } from "react";
 import { useParams } from 'react-router-dom';
-import { setAccessToken } from '../hooks/useAuth';
+import { post } from '../lib/Requests';
+import FormErrors from '../components/FormErrors';
 
 export default function MessageForm(props) {
   const [message, setMessage] = useState('');
   const [charCount, setCharCount] = useState(0);
+  const [errors, setErrors] = useState({});
   const params = useParams();
 
   const isCharCountValid = charCount <= 1024;
@@ -18,36 +20,23 @@ export default function MessageForm(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({})
     if (!isCharCountValid) return;
 
-    const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/messages`;
+    const payload_data = {
+      message: message
+    }
+    if (params.handle) {
+      payload_data.handle = params.handle
+    } else {
+      payload_data.message_group_uuid = params.message_group_uuid
+    }
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/messages`
 
-    try {
-      let json = {
-        message: message
-      }
-      if (params.handle) {
-        json.handle = params.handle
-      } else {
-        json.message_group_uuid = params.message_group_uuid
-      }
-
-      await setAccessToken();
-      const access_token = localStorage.getItem('access_token')
-
-      const response = await fetch(backendUrl, {
-        method: "POST",
-        headers: {
-          'Authorization': `Bearer ${access_token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(json)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+    post(url, payload_data, {
+      auth: true,
+      setErrors: setErrors,
+      success: function (data) {
         console.log('data:', data)
         if (data.message_group_uuid) {
           console.log('redirect to message group')
@@ -55,12 +44,8 @@ export default function MessageForm(props) {
         } else {
           props.setMessages(current => [...current, data]);
         }
-      } else {
-        console.error("Failed to send message", response);
       }
-    } catch (error) {
-      console.error("Error submitting the message", error);
-    }
+    })
   };
 
   return (
@@ -79,6 +64,7 @@ export default function MessageForm(props) {
           Message
         </button>
       </div>
+      <FormErrors errors={errors} />
     </form>
   );
 }

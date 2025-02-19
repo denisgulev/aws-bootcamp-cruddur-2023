@@ -3,7 +3,7 @@ import requests
 from jose import jwk, jwt
 from jose.exceptions import JOSEError
 from jose.utils import base64url_decode
-from functools import wraps, partial
+from functools import wraps
 from flask import request, g
 from flask import current_app as app
 import os
@@ -29,8 +29,8 @@ class CognitoToken:
             self.request_client = request_client
         self._load_jwk_keys()
 
-    @classmethod
-    def extract_access_token(self, request_headers):
+    @staticmethod
+    def extract_access_token(request_headers):
         access_token = None
         auth_header = request_headers.get(HTTP_HEADER)
         if auth_header and " " in auth_header:
@@ -120,8 +120,8 @@ class CognitoToken:
 
 def jwt_required(f=None, on_error=None):
     if f is None:
-        def wrapper(f):
-            return jwt_required(f, on_error)
+        def wrapper(func):
+            return jwt_required(func, on_error)
         return wrapper
 
     @wraps(f)

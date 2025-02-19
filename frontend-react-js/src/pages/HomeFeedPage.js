@@ -25,8 +25,6 @@ export default function HomeFeedPage() {
           activity={replyActivity}
           popped={poppedReply}
           setPopped={setPoppedReply}
-          setActivities={setActivities}
-          activities={activities}
         />
         <ActivityFeed
           title="Home"

@@ -106,4 +106,8 @@
 
 ### Adjust CodePipeline
 1. adjust `buildspec.yml` path, need to specify the path from the root directory
-2. added permission to operate on S3 bucket, ECS and Codebuild for the CodePipelineRole
+2. add permission to operate on S3 bucket, ECS and Codebuild for the CodePipelineRole
+
+### Code Refactoring
+1. create a decorator for jwt token validation
+2. move routes in separate files

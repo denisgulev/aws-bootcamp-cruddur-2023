@@ -2,10 +2,13 @@ import './ReplyForm.css';
 import React, { useState } from "react";
 
 import ActivityContent from '../components/ActivityContent';
+import FormErrors from '../components/FormErrors';
+import { post } from '../lib/Requests';
 
-export default function ReplyForm({ popped, setPopped, activity, activities, setActivities }) {
+export default function ReplyForm({ popped, setPopped, activity, activities, setActivities, setReplies }) {
   const [count, setCount] = useState(0);
   const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({});
 
   // Dynamically set class for character count
   const charCountClasses = ['count'];
@@ -15,41 +18,31 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({})
 
-    try {
-      const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`;
-      const response = await fetch(backendUrl, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
+    const payload_data = {
+      activity_uuid: activity.uuid,
+      message: message
+    }
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`
 
-      if (response.ok) {
-        const data = await response.json();
-        // Update the activity's replies in a deep copy of activities
-        const updatedActivities = activities.map((item) =>
-          item.uuid === activity.uuid
-            ? { ...item, replies: [...item.replies, data] }
-            : item
-        );
-        setActivities(updatedActivities);
+    post(url, payload_data, {
+      auth: true,
+      setErrors: setErrors,
+      success: function (data) {
+        if (setReplies) {
+          setReplies(current => [data, ...current]);
+        }
 
         // Reset the form
         resetForm();
-      } else {
-        console.error('Failed to submit reply:', await response.text());
       }
-    } catch (error) {
-      console.error('Error submitting reply:', error);
-    }
+    })
   };
 
   const handleTextareaChange = (event) => {
-    const newMessage = event.target.value;
-    setCount(newMessage.length);
-    setMessage(newMessage);
+    setCount(event.target.value.length);
+    setMessage(event.target.value);
   };
 
   const resetForm = () => {
@@ -59,7 +52,6 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
   };
 
   const close = (event) => {
-    console.log('close', event.target)
     if (event.target.classList.contains("reply_popup")) {
       setPopped(false)
     }
@@ -70,7 +62,11 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
   return (
     <div className="popup_form_wrap reply_popup" onClick={close}>
       <div className="popup_form">
-        <div className="popup_heading"></div>
+        <div className="popup_heading">
+          <div className="popup_title">
+            Reply to...
+          </div>
+        </div>
         <div className="popup_content">
           <div className="activity_wrap">
             {activity && <ActivityContent activity={activity} />}
@@ -86,6 +82,7 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
               <div className={charCountClasses.join(' ')}>{240 - count}</div>
               <button type="submit">Reply</button>
             </div>
+            <FormErrors errors={errors} />
           </form>
         </div>
       </div>

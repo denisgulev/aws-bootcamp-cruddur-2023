@@ -5,8 +5,9 @@ import DesktopNavigation from '../components/DesktopNavigation';
 import DesktopSidebar from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
-import { useAuth, setAccessToken } from '../hooks/useAuth'; // Import the useAuth hook
+import { useAuth } from '../hooks/useAuth'; // Import the useAuth hook
 import ProfileForm from '../components/ProfileForm';
+import { get } from '../lib/Requests';
 
 export default function UserFeedPage() {
   const [profile, setProfile] = useState([]);
@@ -14,34 +15,23 @@ export default function UserFeedPage() {
   const [popped, setPopped] = useState(false);
   const [poppedProfile, setPoppedProfile] = useState(false);
   const dataFetchedRef = useRef(false);
-  const { handle } = useParams();
+  const params = useParams();
 
   // Use the useAuth hook to get the authenticated user
   const { user } = useAuth();
 
   const loadData = async () => {
-    try {
-      await setAccessToken();
-      const access_token = localStorage.getItem('access_token')
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${params.handle}`
 
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${handle}`;
-      const response = await fetch(backend_url, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        method: "GET"
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log("profile --> ", data.profile)
-        setProfile(data.profile);
-        setActivities(data.activities);
-      } else {
-        console.error("Failed to fetch activities:", response);
+    get(url, {
+      auth: false,
+      success: function (data) {
+        console.log("data", data)
+        console.log('setprofile', data.profile)
+        setProfile(data.profile)
+        setActivities(data.activities)
       }
-    } catch (err) {
-      console.error("Error loading data:", err);
-    }
+    })
   };
 
   useEffect(() => {
