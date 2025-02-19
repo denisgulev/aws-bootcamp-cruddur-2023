@@ -8,6 +8,7 @@ from flask_cors import cross_origin
 # services
 from services.users_short import *
 from services.update_profile import *
+from services.show_activity import *
 
 # helpers
 from lib.helpers import model_json
@@ -30,4 +31,14 @@ def load(app):
     @app.route("/api/users/<string:handle>/short", methods=['GET'])
     def data_users_short(handle):
         data = UsersShort.run(handle)
+        return data, 200
+
+    @app.route("/api/activities/@<string:handle>", methods=['GET'])
+    def data_users_activities(handle):
+        model = UserActivities.run(handle)
+        return model_json(model)
+
+    @app.route("/api/activities/@<string:handle>/status/<string:activity_uuid>", methods=['GET'])
+    def data_show_activity(handle,activity_uuid):
+        data = ShowActivity.run(handle, activity_uuid)
         return data, 200

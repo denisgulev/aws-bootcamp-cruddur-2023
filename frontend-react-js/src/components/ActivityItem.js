@@ -1,27 +1,40 @@
 import './ActivityItem.css';
 
+import { useNavigate } from "react-router-dom";
+
 import ActivityContent from '../components/ActivityContent';
 import ActivityActionReply from '../components/ActivityActionReply';
 import ActivityActionRepost from '../components/ActivityActionRepost';
 import ActivityActionLike from '../components/ActivityActionLike';
 import ActivityActionShare from '../components/ActivityActionShare';
 
-export default function ActivityItem({ activity, setReplyActivity, setPopped }) {
-  const replies = activity.replies ? (
-    <div className="replies">
-      {activity.replies.map((reply) => (
-        <ActivityItem
-          key={reply.uuid}
-          setReplyActivity={setReplyActivity}
-          setPopped={setPopped}
-          activity={reply}
-        />
-      ))}
-    </div>
-  ) : null;
+export default function ActivityItem({ expanded, activity, setReplyActivity, setPopped }) {
+  const navigate = useNavigate()
+
+  const click = (event) => {
+    event.preventDefault()
+    const url = `/@${activity.handle}/status/${activity.uuid}`
+    navigate(url)
+    return false;
+  }
+
+  let expanded_meta;
+  // if (expanded === true) {
+  //   1: 56 PM · May 23, 2023
+  // }
+
+
+  const attrs = {}
+  let item
+  if (expanded === true) {
+    attrs.className = 'activity_item expanded'
+  } else {
+    attrs.className = 'activity_item clickable'
+    attrs.onClick = click
+  }
 
   return (
-    <div className="activity_item">
+    <div {...attrs}>
       <div className="activity_main">
         <ActivityContent activity={activity} />
         <div className="activity_actions">
@@ -37,7 +50,6 @@ export default function ActivityItem({ activity, setReplyActivity, setPopped }) 
           <ActivityActionShare activity_uuid={activity.uuid} />
         </div>
       </div>
-      {replies}
     </div>
   );
 }

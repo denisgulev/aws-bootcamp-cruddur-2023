@@ -5,7 +5,7 @@ import { format_datetime, time_ago } from '../lib/DateTimeFormats';
 
 export default function ActivityContent({ activity }) {
   const formatExpiresAt = (expiresAt) => format_datetime(expiresAt, 'minutes');
-//  const formatCreatedAt = (createdAt) => format_datetime(createdAt, 'hours');
+  //  const formatCreatedAt = (createdAt) => format_datetime(createdAt, 'hours');
 
   const expiresAt = activity.expires_at && (
     <div className="expires_at" title={activity.expires_at}>
@@ -16,13 +16,13 @@ export default function ActivityContent({ activity }) {
 
   return (
     <div className='activity_content_wrap'>
-      <div className='activity_avatar'></div>
+      <Link className='activity_avatar' to={`/@` + activity.handle}></Link>
       <div className='activity_content'>
         <div className='activity_meta'>
-          <Link className='activity_identity' to={`/@${activity.handle}`}>
-            <div className='display_name'>{activity.display_name}</div>
-            <div className="handle">@{activity.handle}</div>
-          </Link>
+          <div className='activity_identity'>
+            <Link className='display_name' to={`/@${activity.handle}`}>{activity.display_name}</Link>
+            <Link className="handle" to={`/@${activity.handle}`}>@{activity.handle}</Link>
+          </div>
           <div className='activity_times'>
             <div className="created_at" title={format_datetime(activity.created_at)}>
               <span className='ago'>{time_ago(activity.created_at)}</span>

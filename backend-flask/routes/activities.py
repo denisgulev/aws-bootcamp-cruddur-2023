@@ -12,7 +12,6 @@ from services.user_activities import *
 from services.create_activity import *
 from services.create_reply import *
 from services.search_activities import *
-from services.show_activity import *
 
 # helpers
 from lib.helpers import model_json
@@ -54,11 +53,6 @@ def load(app):
         ttl = request.json['ttl']
         model = CreateActivity.run(message, g.cognito_user_uuid, ttl)
         return model_json(model)
-
-    @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
-    def data_show_activity(activity_uuid):
-        data = ShowActivity.run(activity_uuid=activity_uuid)
-        return data, 200
 
     @app.route("/api/activities/<string:activity_uuid>/reply", methods=['POST','OPTIONS'])
     @cross_origin()
