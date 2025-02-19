@@ -31,7 +31,7 @@ class Ddb:
     @staticmethod
     def list_message_groups(client, my_user_uuid):
         logger.info("**** calling list_message_groups ****")
-        table_name = "cruddur-messages"
+        table_name = os.getenv("DDB_MESSAGE_TABLE")
         current_year = str(datetime.now().year)
         query_params = {
             'KeyConditionExpression': 'pk = :pk AND begins_with(sk, :year)',
@@ -67,7 +67,7 @@ class Ddb:
     @staticmethod
     def list_messages(client, my_user_uuid, message_group_uuid):
         logger.info("**** calling list_messages ****")
-        table_name = "cruddur-messages"
+        table_name = os.getenv("DDB_MESSAGE_TABLE")
         current_year = str(datetime.now().year)
         query_params = {
             'KeyConditionExpression': 'pk = :pk AND begins_with(sk, :year)',
@@ -103,7 +103,7 @@ class Ddb:
     @staticmethod
     def create_message(client,message_group_uuid, message, my_user_uuid, my_user_display_name, my_user_handle):
         now = datetime.now(timezone.utc).astimezone().isoformat()
-        table_name = "cruddur-messages"
+        table_name = os.getenv("DDB_MESSAGE_TABLE")
         created_at = now
         message_uuid = str(uuid.uuid4())
 
@@ -138,7 +138,7 @@ class Ddb:
     @staticmethod
     def create_message_group(client, message,my_user_uuid, my_user_display_name, my_user_handle, other_user_uuid, other_user_display_name, other_user_handle):
         logger.info('== create_message_group.1')
-        table_name = 'cruddur-messages'
+        table_name = os.getenv("DDB_MESSAGE_TABLE")
 
         message_group_uuid = str(uuid.uuid4())
         message_uuid = str(uuid.uuid4())

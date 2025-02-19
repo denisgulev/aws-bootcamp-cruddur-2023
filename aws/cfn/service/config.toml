@@ -2,3 +2,8 @@
 bucket = 'cfn-artifacts-d'
 region = 'eu-south-1'
 stack_name = 'CrdService'
+
+[parameters]
+EnvFrontendUrl = 'https://cruddur.denisgulev.com'
+EnvBackendUrl = 'https://api.denisgulev.com'
+DDBMessageTable = 'CrdDdb-DynamoDBTable-17022U1CSL94Y'
