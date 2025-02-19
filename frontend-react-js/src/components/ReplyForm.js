@@ -5,7 +5,7 @@ import ActivityContent from '../components/ActivityContent';
 import FormErrors from '../components/FormErrors';
 import { post } from '../lib/Requests';
 
-export default function ReplyForm({ popped, setPopped, activity, activities, setActivities }) {
+export default function ReplyForm({ popped, setPopped, activity, activities, setActivities, setReplies }) {
   const [count, setCount] = useState(0);
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
@@ -30,14 +30,10 @@ export default function ReplyForm({ popped, setPopped, activity, activities, set
       auth: true,
       setErrors: setErrors,
       success: function (data) {
-        // Update the activity's replies in a deep copy of activities
-        // add activity to the feed
-        // let activities_deep_copy = JSON.parse(JSON.stringify(activities))
-        // let found_activity = activities_deep_copy.find(function (element) {
-        //   return element.uuid === activity.uuid;
-        // });
-        // found_activity.replies.push(data)
-        // setActivities(activities_deep_copy);
+        if (setReplies) {
+          setReplies(current => [data, ...current]);
+        }
+
         // Reset the form
         resetForm();
       }

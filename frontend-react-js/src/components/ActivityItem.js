@@ -18,20 +18,10 @@ export default function ActivityItem({ expanded, activity, setReplyActivity, set
     return false;
   }
 
-  let expanded_meta;
-  // if (expanded === true) {
-  //   1: 56 PM · May 23, 2023
-  // }
-
 
   const attrs = {}
-  let item
-  if (expanded === true) {
-    attrs.className = 'activity_item expanded'
-  } else {
-    attrs.className = 'activity_item clickable'
-    attrs.onClick = click
-  }
+  attrs.className = 'activity_item clickable'
+  attrs.onClick = click
 
   return (
     <div {...attrs}>
