@@ -1,4 +1,4 @@
-from flask import got_request_exception
+from flask import got_request_exception, g
 from flask import current_app as app
 import os
 import rollbar
@@ -19,3 +19,4 @@ def init_rollbar():
 
     # send exceptions from `app` to rollbar, using flask's signal system.
     got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+    g.rollbar = rollbar
