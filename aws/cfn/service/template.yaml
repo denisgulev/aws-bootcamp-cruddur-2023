@@ -71,6 +71,9 @@ Parameters:
     Default: 'arn:aws:ssm:eu-south-1:923264624222:parameter/cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS'
   DDBMessageTable:
     Type: String
+  EnvFlaskEnv:
+    Type: String
+    Default: 'production'
 
 Resources:
   FargateService:
@@ -171,6 +174,8 @@ Resources:
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: !Ref ServiceName
           Environment:
+            - Name: FLASK_ENV
+              Value: !Ref EnvFlaskEnv
             - Name: DDB_MESSAGE_TABLE
               Value: !Ref DDBMessageTable
             - Name: OTEL_SERVICE_NAME
