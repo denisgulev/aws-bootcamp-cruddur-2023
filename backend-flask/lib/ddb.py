@@ -32,6 +32,7 @@ class Ddb:
     def list_message_groups(client, my_user_uuid):
         logger.info("**** calling list_message_groups ****")
         table_name = os.getenv("DDB_MESSAGE_TABLE")
+        logger.info(f"**** table_name ****: {table_name}")
         current_year = str(datetime.now().year)
         query_params = {
             'KeyConditionExpression': 'pk = :pk AND begins_with(sk, :year)',

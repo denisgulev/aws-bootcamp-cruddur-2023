@@ -58,7 +58,7 @@ class CreateActivity:
 
   @staticmethod
   def create_activity(cognito_user_uuid, message, expires_at):
-    sql = db.template('users','create')
+    sql = db.template('activities','create')
 
     uuid = db.query_commit_with_returning_id(sql,{
       'cognito_user_uuid': cognito_user_uuid,
@@ -70,7 +70,7 @@ class CreateActivity:
 
   @staticmethod
   def query_object_activity(uuid):
-    sql = db.template('users','get_object')
+    sql = db.template('activities','get_object')
 
     return db.query_object_json(sql,{
       'uuid': uuid

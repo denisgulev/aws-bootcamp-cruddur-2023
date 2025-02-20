@@ -2,6 +2,7 @@
 
 import boto3
 import sys
+import os
 
 from botocore.exceptions import ClientError
 
@@ -15,7 +16,8 @@ if len(sys.argv) > 1:
 
 ddb = boto3.client('dynamodb', **attrs)
 
-table_name = "cruddur-messages"
+table_name = os.getenv("DDB_MESSAGE_TABLE")
+print("***tablename: ", table_name)
 
 try:
     response1 = ddb.create_table(

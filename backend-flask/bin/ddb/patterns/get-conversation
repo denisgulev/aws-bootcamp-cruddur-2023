@@ -3,6 +3,7 @@
 import boto3
 import sys
 import json
+import os
 from datetime import datetime
 
 attrs = {
@@ -14,7 +15,7 @@ if len(sys.argv) == 2:
     attrs = {}
 
 ddb = boto3.client('dynamodb', **attrs)
-table_name = 'cruddur-messages'
+table_name = os.getenv("DDB_MESSAGE_TABLE")
 current_year = str(datetime.now().year)
 
 message_group_uuid = "5ae290ed-55d1-47a0-bc6d-fe2bc2700399"
