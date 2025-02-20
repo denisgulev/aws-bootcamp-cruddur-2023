@@ -1,4 +1,4 @@
-.activity_content_wrap {
+/* .activity_content_wrap {
   display: flex;
   flex-direction: row;
   align-items: start;
@@ -72,6 +72,90 @@
 }
 
 .activity_content .message {
+  color: #fff;
+  font-size: 16px;
+  margin-top: 8px;
+} */
+
+/* Activity Content Wrapper */
+.activity-content {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+
+.activity-content__avatar {
+  background: rgb(149, 0, 255);
+  height: 60px;
+  width: 60px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Main Content Section */
+.activity-content__body {
+  flex-grow: 1;
+  padding-left: 12px;
+}
+
+/* Meta Information Section */
+.activity-content__meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+.activity-content__identity {
+  flex-grow: 1;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.activity-content__identity a {
+  text-decoration: none;
+  display: block;
+  flex-shrink: 1;
+}
+
+.activity-content__display-name {
+  font-weight: 800;
+  color: #fff;
+}
+
+.activity-content__handle {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Time and Expires Information */
+.activity-content__times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.activity-content__created-at {
+  color: rgb(72, 77, 95);
+  font-size: 14px;
+}
+
+.activity-content__expires {
+  color: rgb(149, 0, 255);
+  font-size: 14px;
+  display: flex;
+  gap: 2px;
+}
+
+.activity-content__expires svg.icon {
+  fill: rgb(149, 0, 255);
+  width: 14px;
+  height: 14px;
+}
+
+/* Message Section */
+.activity-content__message {
   color: #fff;
   font-size: 16px;
   margin-top: 8px;

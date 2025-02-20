@@ -1,29 +1,35 @@
 import './Replies.css';
-
 import ActivityItem from './ActivityItem';
 
-export default function Replies(props) {
-    console.log('replies-props', props)
-    let content;
-    if (props.replies.length === 0) {
-        content = <div className='replies_primer'>
+export default function Replies({ replies, setReplyActivity, setPopped, parentUuid = null }) {
+    const filteredReplies = replies.filter(reply => reply.reply_to_activity_uuid === parentUuid);
+
+    const content = replies.length === 0 ? (
+        <div className="replies-primer">
             <span>Nothing to see here yet</span>
         </div>
-    } else {
-        content = <div className='activities_feed_collection'>
-            {props.replies.map(activity => {
-                return <ActivityItem
-                    setReplyActivity={props.setReplyActivity}
-                    setPopped={props.setPopped}
-                    key={activity.uuid}
-                    activity={activity}
-                />
-            })}
+    ) : (
+        <div className="replies-list">
+            {filteredReplies.map((activity, index) => (
+                <div key={index} className="reply-item">
+                    <ActivityItem
+                        setReplyActivity={setReplyActivity}
+                        setPopped={setPopped}
+                        key={index}
+                        activity={activity}
+                        mainActivity={activity.expires_at != null}
+                    />
+                    {/* Recursively render nested replies */}
+                    <Replies
+                        replies={replies}
+                        setReplyActivity={setReplyActivity}
+                        setPopped={setPopped}
+                        parentUuid={activity.uuid}
+                    />
+                </div>
+            ))}
         </div>
-    }
-
-    return (<div>
-        {content}
-    </div>
     );
+
+    return <div>{content}</div>;
 }

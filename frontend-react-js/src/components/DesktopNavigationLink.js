@@ -17,7 +17,7 @@ export default function DesktopNavigationLink({ handle, active, url, name }) {
   const isActive = handle === active;
 
   return (
-    <Link to={url} className={`primary ${isActive ? 'active' : ''}`}>
+    <Link to={url} className={`desktop-navigation__link ${isActive ? 'active' : ''}`}>
       {iconMap[handle]}
       <span>{name}</span>
     </Link>

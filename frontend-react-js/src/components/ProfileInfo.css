@@ -1,4 +1,4 @@
-.profile-info-wrapper.popped .profile-dialog {
+/* .profile-info-wrapper.popped .profile-dialog {
   display: block;
 }
 
@@ -82,4 +82,95 @@
 }
 .profile-dialog button:hover {
   background: rgba(255,255,255,0.1)
+} */
+
+/* Profile Info Wrapper */
+.profile-info-wrapper.popup-visible .profile-popup {
+  display: block;
+}
+
+.profile-info-wrapper {
+  position: relative;
+}
+
+/* Profile Info Styling */
+.profile-info {
+  display: flex;
+  gap: 12px;
+  border-radius: 999px;
+  padding: 12px;
+  margin-top: 12px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.profile-info:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-info .profile-avatar {
+  background: rgb(149, 0, 255);
+  height: 40px;
+  width: 40px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* Profile Details Section */
+.profile-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-info .profile-display-name {
+  font-weight: 800;
+  color: #fff;
+  font-size: 14px;
+}
+
+.profile-info .profile-username {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+/* Icon Styling */
+.profile-info .icon {
+  fill: rgba(255, 255, 255, 0.5);
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+/* Popup Dialog */
+.profile-popup {
+  background: #000;
+  box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  min-height: 60px;
+  z-index: 3;
+  position: absolute;
+  min-width: 240px;
+  bottom: 70px;
+  overflow: hidden;
+  display: none;
+}
+
+.profile-popup button {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 24px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.profile-popup button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

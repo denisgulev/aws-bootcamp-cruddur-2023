@@ -2,4 +2,12 @@ article {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  gap: 20px;
+}
+
+.content {
+  background: var(--fg);
+  display: flex;
+  flex-direction: column;
+  width: 600px;
 }

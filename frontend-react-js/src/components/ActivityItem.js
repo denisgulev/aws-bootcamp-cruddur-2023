@@ -1,5 +1,4 @@
 import './ActivityItem.css';
-
 import { useNavigate } from "react-router-dom";
 
 import ActivityContent from '../components/ActivityContent';
@@ -8,26 +7,31 @@ import ActivityActionRepost from '../components/ActivityActionRepost';
 import ActivityActionLike from '../components/ActivityActionLike';
 import ActivityActionShare from '../components/ActivityActionShare';
 
-export default function ActivityItem({ expanded, activity, setReplyActivity, setPopped }) {
-  const navigate = useNavigate()
+export default function ActivityItem({
+  expanded,
+  activity,
+  setReplyActivity,
+  setPopped
+}) {
+  const navigate = useNavigate();
 
-  const click = (event) => {
-    event.preventDefault()
-    const url = `/@${activity.handle}/status/${activity.uuid}`
-    navigate(url)
+  const handleClick = (event) => {
+    event.preventDefault();
+    const url = `/@${activity.handle}/status/${activity.uuid}`;
+    navigate(url);
     return false;
-  }
+  };
 
-
-  const attrs = {}
-  attrs.className = 'activity_item clickable'
-  attrs.onClick = click
+  const attrs = {
+    className: 'activity-item clickable',
+    onClick: handleClick
+  };
 
   return (
     <div {...attrs}>
-      <div className="activity_main">
+      <div className="activity-item__main">
         <ActivityContent activity={activity} />
-        <div className="activity_actions">
+        <div className="activity-item__actions">
           <ActivityActionReply
             setReplyActivity={setReplyActivity}
             activity={activity}

@@ -6,7 +6,7 @@ export default function CrudButton({ setPopped }) {
   };
 
   return (
-    <button onClick={handleClick} className="post">
+    <button onClick={handleClick} className="desktop-navigation__button">
       Crud
     </button>
   );

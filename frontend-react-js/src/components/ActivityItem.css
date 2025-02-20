@@ -1,71 +1,70 @@
-.activity_item {
+/* Activity Item Container */
+.activity-item {
   display: flex;
   flex-direction: column;
-  border-bottom: solid 1px rgb(60, 54, 79);
+  border-bottom: 1px solid rgb(60, 54, 79);
   overflow: hidden;
 }
 
-.activity_item.clickable:hover {
+.activity-item.clickable:hover {
   cursor: pointer;
 }
 
-a.activity_item:hover {
+.activity-item:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.replies {
-  padding-left: 24px;
-  background-color: rgba(255, 255, 255, 0.6);
-}
-
-.activity_main {
-  padding: 16px;
-}
-
-.activity_item:last-child {
+.activity-item:last-child {
   border-bottom: none;
 }
 
-.activity_item .activity_actions {
+/* Main Content Area */
+.activity-item__main {
+  padding: 16px;
+}
+
+/* Actions Section */
+.activity-item__actions {
   display: flex;
   align-items: flex-end;
   padding-top: 16px;
   padding-left: 60px;
 }
 
-.activity_item .activity_actions .action {
+.activity-item__actions .action {
   flex-grow: 1;
   cursor: pointer;
   padding: 8px;
   border-radius: 999px;
   display: flex;
   flex-direction: row;
-  gap: 12px
+  gap: 12px;
 }
 
-.activity_item .activity_actions .action .counter {
+.activity-item__actions .action .counter {
   color: rgba(255, 255, 255, 0.8);
   font-weight: 800;
 }
 
-.activity_item .activity_actions .icon {
+.activity-item__actions .action .icon {
   height: 18px;
   width: 18px;
   fill: #fff;
 }
 
-.activity_item .activity_actions .action:hover {
+.activity-item__actions .action:hover {
   background: rgba(149, 0, 255, 0.2);
 }
 
-.activity_item .activity_actions .action:hover .icon {
+.activity-item__actions .action:hover .icon {
   fill: rgb(149, 0, 255);
 }
 
-.activity_item.expanded .activity_content {
+/* Expanded State */
+.activity-item.expanded .activity-content {
   display: flex;
 }
 
-.activity_item.expanded .activity_content .activity_identity {
+.activity-item.expanded .activity-content .activity-identity {
   flex-grow: 1;
 }
