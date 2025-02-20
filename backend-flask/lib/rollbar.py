@@ -1,5 +1,4 @@
 from flask import got_request_exception, g
-from flask import current_app as app
 import os
 import rollbar
 import rollbar.contrib.flask
@@ -17,7 +16,7 @@ def _build_request_data(request):
 rollbar._build_request_data = _build_request_data
 ## XXX end hack
 
-def init_rollbar():
+def init_rollbar(app):
     rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
     flask_env = os.getenv('FLASK_ENV')
     """init rollbar module"""

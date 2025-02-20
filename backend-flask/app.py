@@ -13,9 +13,9 @@ app = Flask(__name__)
 
 ## initialization
 init_honeycomb(app)
+init_cors(app)
 with app.app_context():
-  g.rollbar = init_rollbar()
-  init_cors(app)
+  g.rollbar = init_rollbar(app)
 
 ## load routes
 routes.activities.load(app)
