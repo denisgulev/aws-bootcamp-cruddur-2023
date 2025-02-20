@@ -14,7 +14,7 @@ export default function ActivityActionReply(props) {
   }
 
   return (
-    <div onClick={onclick} className="action activity_action_reply">
+    <div onClick={onclick} className="action">
       <ReplyIcon className='icon' />
       {counter}
     </div>

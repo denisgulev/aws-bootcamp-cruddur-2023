@@ -1,86 +1,78 @@
 import './ReplyForm.css';
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 import ActivityContent from '../components/ActivityContent';
 import FormErrors from '../components/FormErrors';
 import { post } from '../lib/Requests';
 
-export default function ReplyForm({ popped, setPopped, activity, activities, setActivities, setReplies }) {
-  const [count, setCount] = useState(0);
+export default function ReplyForm({ popped, setPopped, activity, setReplies }) {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
 
-  // Dynamically set class for character count
-  const charCountClasses = ['count'];
-  if (240 - count < 0) {
-    charCountClasses.push('err');
-  }
+  const characterLimit = 240;
+  const remainingCharacters = characterLimit - message.length;
+  const isOverLimit = remainingCharacters < 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrors({})
+    setErrors({});
 
-    const payload_data = {
-      activity_uuid: activity.uuid,
-      message: message
-    }
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`
+    const payload = { activity_uuid: activity.uuid, message };
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/${activity.uuid}/reply`;
 
-    post(url, payload_data, {
+    post(url, payload, {
       auth: true,
-      setErrors: setErrors,
-      success: function (data) {
+      setErrors,
+      success: (data) => {
         if (setReplies) {
-          setReplies(current => [data, ...current]);
+          setReplies((current) => [data, ...current]);
         }
-
-        // Reset the form
         resetForm();
-      }
-    })
+      },
+    });
   };
 
   const handleTextareaChange = (event) => {
-    setCount(event.target.value.length);
-    setMessage(event.target.value);
+    const newMessage = event.target.value;
+    setMessage(newMessage);
   };
 
   const resetForm = () => {
-    setCount(0);
     setMessage('');
     setPopped(false);
   };
 
-  const close = (event) => {
-    if (event.target.classList.contains("reply_popup")) {
-      setPopped(false)
+  const handleClose = () => setPopped(false);
+
+  const closePopup = (event) => {
+    if (event.target.classList.contains('reply-popup')) {
+      setPopped(false);
     }
-  }
+  };
 
   if (!popped) return null;
 
   return (
-    <div className="popup_form_wrap reply_popup" onClick={close}>
-      <div className="popup_form">
-        <div className="popup_heading">
-          <div className="popup_title">
-            Reply to...
-          </div>
-        </div>
-        <div className="popup_content">
-          <div className="activity_wrap">
+    <div className="reply-popup" onClick={closePopup}>
+      <div className="popup-form">
+        <div className="popup-content">
+          <div className="activity-wrap">
             {activity && <ActivityContent activity={activity} />}
           </div>
-          <form className="replies_form" onSubmit={handleSubmit}>
+          <form className="replies-form" onSubmit={handleSubmit}>
             <textarea
-              type="text"
               placeholder="What is your reply?"
               value={message}
               onChange={handleTextareaChange}
             />
             <div className="submit">
-              <div className={charCountClasses.join(' ')}>{240 - count}</div>
-              <button type="submit">Reply</button>
+              <div className={`activity-form__char-count ${isOverLimit ? "error" : ""}`}>
+                {remainingCharacters}
+              </div>
+              <button type="submit" disabled={isOverLimit}>Reply</button>
+              <button type="button" className="activity-form__close" onClick={handleClose}>
+                Close
+              </button>
             </div>
             <FormErrors errors={errors} />
           </form>

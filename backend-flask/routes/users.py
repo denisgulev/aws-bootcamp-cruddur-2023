@@ -14,7 +14,7 @@ from services.show_activity import *
 from lib.helpers import model_json
 
 def load(app):
-    @app.route("/api/profile/update", methods=['POST','OPTIONS'])
+    @app.route("/api/profile/update", methods=['PUT'])
     @cross_origin()
     @jwt_required()
     def data_update_profile():

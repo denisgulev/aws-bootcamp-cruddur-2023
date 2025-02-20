@@ -16,6 +16,7 @@ services:
       ROLLBAR_ACCESS_TOKEN: "${ROLLBAR_ACCESS_TOKEN}"
       AWS_COGNITO_USER_POOL_ID: "${AWS_USER_POOL_ID}"
       AWS_COGNITO_USER_POOL_CLIENT_ID: "${AWS_USER_POOL_APP_CLIENT_ID}"
+      DDB_MESSAGE_TABLE: "${DDB_MESSAGE_TABLE}"
     # where Dockerfile is expected to be
     build: ./backend-flask
     ports:
@@ -77,6 +78,6 @@ networks:
     driver: bridge
     name: cruddur
 
-volumes:
-  db:
-    driver: local
+#volumes:
+#  db:
+#    driver: local

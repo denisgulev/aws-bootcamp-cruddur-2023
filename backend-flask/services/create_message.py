@@ -57,6 +57,10 @@ class CreateMessage:
       LOGGER.info("USERS =-=-=-=-==")
       LOGGER.info(users)
 
+      if len(users) == 1:
+        model['errors'] = ['user_sender_not_found']
+        return model
+
       my_user    = next((item for item in users if item["kind"] == 'sender'), None)
       other_user = next((item for item in users if item["kind"] == 'recv')  , None)
 

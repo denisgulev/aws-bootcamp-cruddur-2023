@@ -1,57 +1,47 @@
-nav {
+.desktop-navigation {
   flex-shrink: 1;
   width: 280px;
-  padding-top: 16px;
-  padding-right: 24px;
-}
-nav .logo {
-  width: 48px;
-  height: 48px;
-  fill: rgb(149,0,255);
+  padding: 16px 24px 0;
 }
 
-nav a.primary {
+.desktop-navigation__logo {
+  width: 48px;
+  height: 48px;
+  fill: rgb(149, 0, 255);
+}
+
+.desktop-navigation__link {
   display: flex;
   gap: 24px;
   align-items: center;
-  color: rgb(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 20px;
   text-decoration: none;
   padding: 12px 0;
   margin: 8px 0;
+  transition: color 0.2s ease-in-out;
 }
-nav a.primary:hover {
-  color: rgb(255,255,255,1);
+
+.desktop-navigation__link:hover {
+  color: rgba(255, 255, 255, 1);
 }
-nav a.primary .icon {
-  fill: rgb(255,255,255,0.5);
+
+.desktop-navigation__link .icon {
+  fill: rgba(255, 255, 255, 0.5);
   width: 24px;
   height: 24px;
+  transition: fill 0.2s ease-in-out;
 }
 
-nav a.primary:hover .icon {
-  fill: rgb(255,255,255,1);
+.desktop-navigation__link:hover .icon {
+  fill: rgba(255, 255, 255, 1);
 }
 
-nav a.primary.active {
-  color: rgb(149,0,255) !important;
+.desktop-navigation__link.active {
+  color: rgb(149, 0, 255) !important;
   font-weight: 600;
 }
-nav a.primary.active svg {
-  fill: rgb(149,0,255) !important;
-}
 
-nav button.post {
-  display: block;
-  background: rgba(149,0,255,1);
-  color: #fff;
-  border: none;
-  text-decoration: none;
-  border-radius: 999px;
-  width: 100%;
-  font-size: 20px;
-  padding: 16px 0px;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 24px;
+.desktop-navigation__link.active .icon {
+  fill: rgb(149, 0, 255) !important;
 }

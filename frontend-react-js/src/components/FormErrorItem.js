@@ -27,11 +27,11 @@ export default function FormErrorItem(props) {
             case 'message_group_uuid_blank':
                 return "The message group cannot be blank"
                 break;
-            case 'user_reciever_handle_blank':
+            case 'user_receiver_handle_blank':
                 return "You need to send a message to a valid user"
                 break;
-            case 'user_reciever_handle_blank':
-                return "You need to send a message to a valid user"
+            case 'user_sender_not_found':
+                return "You cannot send a message to yourself"
                 break;
             // Profile
             case 'display_name_blank':

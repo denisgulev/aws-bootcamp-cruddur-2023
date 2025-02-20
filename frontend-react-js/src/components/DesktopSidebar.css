@@ -2,12 +2,18 @@ section {
   flex-shrink: 1;
   width: 380px;
   padding: 16px;
+  border-radius: 8px;
+  /* Rounded corners for a modern feel */
 }
 
 section footer {
   display: flex;
   gap: 16px;
   padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  /* Border to separate footer from main content */
+  margin-top: 16px;
+  /* Spacing from content */
 }
 
 section footer a {
@@ -18,4 +24,42 @@ section footer a {
 
 section footer a:hover {
   color: rgba(255, 255, 255, 1);
+}
+
+/* Styling for each section inside the sidebar */
+section>* {
+  margin-bottom: 16px;
+  /* Spacing between components */
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.1);
+  /* Subtle background to separate sections */
+  border-radius: 8px;
+}
+
+section>.search {
+  background-color: rgba(0, 0, 0, 0.05);
+  /* Lighter background for search */
+}
+
+section>.trending,
+section>.suggested-users {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Slightly more distinct background for trending and suggested sections */
+}
+
+section>.join {
+  background-color: rgba(255, 255, 255, 0.08);
+  /* Different background for Join Section */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Border to highlight Join Section */
+}
+
+section>.join a {
+  color: rgba(255, 255, 255, 0.7);
+  /* Color for links inside join section */
+}
+
+section>.join a:hover {
+  color: rgba(255, 255, 255, 1);
+  /* Hover effect */
 }

@@ -4,7 +4,6 @@ import process from 'process';
 import { getAccessToken } from '../hooks/useAuth';
 import FormErrors from '../components/FormErrors';
 import { put } from '../lib/Requests';
-import { Form } from 'react-router-dom';
 
 export default function ProfileForm(props) {
     const [bio, setBio] = React.useState('');
@@ -14,7 +13,7 @@ export default function ProfileForm(props) {
     React.useEffect(() => {
         setBio(props.profile.bio || '');
         setDisplayName(props.profile.display_name);
-    }, [props.profile])
+    }, [props.profile]);
 
     const s3uploadkey = async (extension) => {
         console.log("s3uploadkey -> extension", extension)

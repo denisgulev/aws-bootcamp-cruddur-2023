@@ -10,4 +10,5 @@ SELECT
   activities.created_at
 FROM public.activities
 LEFT JOIN public.users ON users.uuid = activities.user_uuid
+WHERE activities.expires_at is not null
 ORDER BY activities.created_at DESC

@@ -46,11 +46,11 @@ def get_user_uuids():
 
     users = db.query_array(sql,{
         'my_handle': 'denis',
-        'other_handle': 'bob'
+        'other_handle': 'altdenis'
     })
 
     my_user    = next((item for item in users if item["handle"] == 'denis'), None)
-    other_user = next((item for item in users if item["handle"] == 'bob'), None)
+    other_user = next((item for item in users if item["handle"] == 'altdenis'), None)
     results = {
         'my_user': my_user,
         'other_user': other_user
@@ -60,7 +60,7 @@ def get_user_uuids():
     return results
 
 def create_message_group(client,message_group_uuid, my_user_uuid, last_message_at=None, message=None, other_user_uuid=None, other_user_display_name=None, other_user_handle=None):
-    table_name = 'cruddur-messages'
+    table_name = os.getenv("DDB_MESSAGE_TABLE")
     record = {
         'pk':   {'S': f"GRP#{my_user_uuid}"},
         'sk':   {'S': last_message_at},
@@ -78,7 +78,7 @@ def create_message_group(client,message_group_uuid, my_user_uuid, last_message_a
     print(response)
 
 def create_message(client,message_group_uuid, created_at, message, my_user_uuid, my_user_display_name, my_user_handle):
-    table_name = 'cruddur-messages'
+    table_name = os.getenv("DDB_MESSAGE_TABLE")
     record = {
         'pk':   {'S': f"MSG#{message_group_uuid}"},
         'sk':   {'S': created_at },
